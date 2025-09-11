@@ -1,6 +1,8 @@
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class TentativaQuiz {
+    private UUID id;
     private Quiz quiz;
     private Aluno aluno;
     private RespostaSheet respostaSheet;
@@ -8,7 +10,8 @@ public class TentativaQuiz {
     private LocalDateTime dataFim;
     private double nota;
 
-    public TentativaQuiz(Quiz quiz, Aluno aluno) {
+    public TentativaQuiz(Aluno aluno, Quiz quiz) {
+        this.id = quiz.getId();
         this.quiz = quiz;
         this.aluno = aluno;
         this.respostaSheet = new RespostaSheet();

@@ -1,25 +1,20 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Quiz {
-    private String titulo;
-    private String descricao;
+    private UUID id;
+    private double notaMinima;
     private List<Questao> questoes;
 
     // Construtor
-    public Quiz(String titulo, String descricao) {
-        this.titulo = titulo;
-        this.descricao = descricao;
-        this.questoes = new ArrayList<>();
+    public Quiz(double notaMinima) {
+        this.notaMinima = notaMinima;
+        this.id = UUID.randomUUID();
     }
 
-    // Getters
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public String getDescricao() {
-        return descricao;
+    public UUID getId() {
+        return id;
     }
 
     public List<Questao> getQuestoes() {

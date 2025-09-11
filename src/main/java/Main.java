@@ -76,18 +76,18 @@ public class Main {
         System.out.println("    * " + aulaClasses.getTitulo() + " - 50%\n");
 
         // 6. Criar quiz para avaliar conhecimento
-        Quiz quizPOO = new Quiz("Quiz Final - POO", "Avaliação dos conhecimentos em POO");
+        Quiz quizPOO = new Quiz(1.0);
 
         // Criar questões
-        QMultiplaSelecao q1 = new QMultiplaSelecao("Qual conceito permite que uma classe herde características de outra?");
-        q1.adicionarOpcao("Encapsulamento");
-        q1.adicionarOpcao("Herança");
-        q1.adicionarOpcao("Polimorfismo");
-        q1.setRespostaCorreta(1); // índice 1 = "Herança"
+        QMultiplaSelecao q1 = new QMultiplaSelecao("Qual conceito permite que uma classe herde características de outra?", 1.0);
+        q1.adicionarOpcao("1. Encapsulamento");
+        q1.adicionarOpcao("2. Herança");
+        q1.adicionarOpcao("3. Polimorfismo");
+        q1.setRespostaCorreta(1);
 
-        QVerdadeiroFalso q2 = new QVerdadeiroFalso("Em Java, todas as classes herdam de Object.", true);
+        QVerdadeiroFalso q2 = new QVerdadeiroFalso("(V ou F): Em Java, todas as classes herdam de Object.", 1.0, true);
 
-        QUmaEscolha q3 = new QUmaEscolha("Qual palavra-chave é usada para herdar uma classe em Java?", "extends");
+        QUmaEscolha q3 = new QUmaEscolha("Qual palavra-chave é usada para herdar uma classe em Java?", 2.0, "extends");
 
         // Adicionar questões ao quiz
         quizPOO.adicionarQuestao(q1);
@@ -95,7 +95,6 @@ public class Main {
         quizPOO.adicionarQuestao(q3);
 
         System.out.println("✓ Quiz criado:");
-        System.out.println("  - " + quizPOO.getTitulo());
         System.out.println("  - " + quizPOO.getQuestoes().size() + " questões\n");
 
         // 7. Alunos realizam o quiz
@@ -180,7 +179,7 @@ public class Main {
             if (!tentativas.isEmpty()) {
                 System.out.println("  Tentativas de Quiz:");
                 for (TentativaQuiz tentativa : tentativas) {
-                    System.out.println("    - " + tentativa.getQuiz().getTitulo() +
+                    System.out.println("    - " + tentativa.getQuiz() +
                             ": " + String.format("%.1f", tentativa.getNota()) + "/3.0");
                 }
             }

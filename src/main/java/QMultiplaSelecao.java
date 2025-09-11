@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QMultiplaSelecao extends Questao {
-    private List<String> opcoes;
+    private final List<String> opcoes;
     private int indiceRespostaCorreta;
 
-    public QMultiplaSelecao(String enunciado) {
-        super(enunciado);
+    public QMultiplaSelecao(String enunciado, double peso) {
+        super(enunciado, peso);
         this.opcoes = new ArrayList<>();
     }
 
@@ -27,12 +27,13 @@ public class QMultiplaSelecao extends Questao {
     @Override
     public double pontuar(Resposta resposta) {
         try {
-            int indiceResposta = Integer.parseInt(resposta.getValor());
+            int indiceResposta = Integer.parseInt(resposta.getValor()) - 1;
             if (indiceResposta == indiceRespostaCorreta) {
-                return 1.0; // Ponto completo por acertar
+                return super.peso; // Ponto completo por acertar
             }
         } catch (NumberFormatException e) {
-            // Resposta inválida
+            System.err.println("Alternativa inválida.");
+            return 0.0;
         }
         return 0.0;
     }

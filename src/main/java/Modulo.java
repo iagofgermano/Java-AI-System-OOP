@@ -1,10 +1,6 @@
 import java.util.*;
 import java.time.LocalDateTime;
 
-/**
- * Classe que representa um módulo dentro de um curso.
- * Contém aulas relacionadas a um tema específico.
- */
 public class Modulo {
 
     // Atributos
@@ -18,13 +14,6 @@ public class Modulo {
     private List<Aula> aulas;
     private Curso curso; // Referência ao curso pai
 
-    /**
-     * Construtor da classe Modulo
-     *
-     * @param titulo Título do módulo
-     * @param descricao Descrição do módulo
-     * @param cargaHoraria Carga horária do módulo em horas
-     */
     public Modulo(String titulo, String descricao, int cargaHoraria) {
         this.id = gerarIdUnico();
         this.titulo = titulo != null ? titulo : "Módulo sem título";

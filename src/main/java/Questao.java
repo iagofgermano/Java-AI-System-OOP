@@ -1,14 +1,11 @@
 public abstract class Questao {
     protected String enunciado;
+    protected double peso;
 
-    public Questao(String enunciado) {
+    protected Questao(String enunciado, double peso) {
         this.enunciado = enunciado;
+        this.peso = peso;
     }
 
-    public String getEnunciado() {
-        return enunciado;
-    }
-
-    // Método abstrato para pontuação
     public abstract double pontuar(Resposta resposta);
 }
