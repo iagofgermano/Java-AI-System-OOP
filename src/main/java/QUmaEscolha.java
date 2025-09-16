@@ -1,20 +1,26 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class QUmaEscolha extends Questao {
-    private final String respostaCorreta;
+    private List<Opcao> opcoes;
+    private int indiceCorreto;
 
-    public QUmaEscolha(String enunciado, double peso, String respostaCorreta) {
+    public QUmaEscolha(String enunciado, double peso) {
         super(enunciado, peso);
-        this.respostaCorreta = respostaCorreta.toLowerCase().trim();
+        this.opcoes = new ArrayList<>();
     }
 
-    public String getEnunciado() {
-        return super.enunciado;
+    public void adicionarOpcao(String texto, boolean correta) {
+        Opcao opcao = new Opcao(texto, correta);
+        opcoes.add(opcao);
+        if (correta) {
+            indiceCorreto = opcoes.size() - 1;
+        }
     }
 
     @Override
     public double pontuar(Resposta resposta) {
-        String respostaAluno = resposta.getValor().toLowerCase().trim();
-        return respostaAluno.equals(respostaCorreta) ? super.peso : 0.0;
+        int respostaIndice = resposta.getIndiceResposta();
+        return (respostaIndice == indiceCorreto) ? peso : 0.0;
     }
 }
