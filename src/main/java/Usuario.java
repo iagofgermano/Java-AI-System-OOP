@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 public abstract class Usuario implements AutoCloseable {
 
     // Atributos
-    protected UUID id;
+    protected final UUID id; // id deve ser imutável após a criação
     protected String nome;
     protected String email;
     protected String senhaHash;
-    protected LocalDateTime dataRegistro;
+    protected final LocalDateTime dataRegistro;
     protected boolean ativo;
-    protected List<SessaoPlayground> sessoesPlayground;
+    protected final List<SessaoPlayground> sessoesPlayground;
 
     /**
      * Construtor da classe Usuario
@@ -24,8 +24,8 @@ public abstract class Usuario implements AutoCloseable {
      */
     protected Usuario(String nome, String email) {
         this.id = UUID.randomUUID();
-        this.nome = nome;
-        this.email = email;
+        this.nome = Objects.requireNonNull(nome, "Nome não pode ser nulo");
+        this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
         this.senhaHash = null;
         this.dataRegistro = LocalDateTime.now();
         this.ativo = true;
@@ -45,14 +45,11 @@ public abstract class Usuario implements AutoCloseable {
      * @return true se a autenticação for bem sucedida, false caso contrário
      */
     public boolean autenticar(String senha) {
-        if (senhaHash == null) {
-            return false;
-        }
-        return senhaHash.equals(hashSenha(senha));
+        return senhaHash != null && senhaHash.equals(hashSenha(senha));
     }
 
     /**
-     * Método para definir a senha do usuário
+     * Define a senha do usuário, armazenando sua versão hasheada
      *
      * @param senha Nova senha
      */
@@ -61,21 +58,21 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     /**
-     * Método para desativar o usuário
+     * Desativa o usuário
      */
     public void desativar() {
         this.ativo = false;
     }
 
     /**
-     * Método para reativar o usuário
+     * Reativa o usuário
      */
     public void reativar() {
         this.ativo = true;
     }
 
     /**
-     * Método para iniciar uma sessão no playground
+     * Inicia uma nova sessão no playground
      *
      * @param duracaoMaxima Duração máxima da sessão em minutos
      * @return A sessão criada
@@ -87,7 +84,7 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     /**
-     * Método para obter as sessões ativas do usuário
+     * Obtém todas as sessões ativas do usuário
      *
      * @return Lista de sessões ativas
      */
@@ -102,14 +99,14 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     /**
-     * Método auxiliar para hash de senha
+     * Gera um hash simples da senha
+     * OBS: Em produção use bcrypt, scrypt ou Argon2.
      *
      * @param senha Senha a ser hasheada
      * @return Hash da senha
      */
     protected String hashSenha(String senha) {
-        // Implementação simples de hash - em produção use bcrypt, scrypt ou similar
-        return Integer.toString(senha.hashCode());
+        return Integer.toString(Objects.requireNonNull(senha, "Senha não pode ser nula").hashCode());
     }
 
     /**
@@ -120,7 +117,6 @@ public abstract class Usuario implements AutoCloseable {
     public void close() {
         System.out.println("Encerrando sessões do usuário: " + this.nome);
 
-        // Encerrar todas as sessões ativas
         for (SessaoPlayground sessao : getSessoesAtivas()) {
             try {
                 sessao.encerrar();
@@ -143,7 +139,7 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        this.nome = Objects.requireNonNull(nome, "Nome não pode ser nulo");
     }
 
     public String getEmail() {
@@ -151,7 +147,7 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
     }
 
     public LocalDateTime getDataRegistro() {
@@ -163,7 +159,7 @@ public abstract class Usuario implements AutoCloseable {
     }
 
     public List<SessaoPlayground> getSessoesPlayground() {
-        return new ArrayList<>(sessoesPlayground); // Retorna cópia para proteger o encapsulamento
+        return new ArrayList<>(sessoesPlayground); // Cópia defensiva
     }
 
     public String getSenhaHash() {
