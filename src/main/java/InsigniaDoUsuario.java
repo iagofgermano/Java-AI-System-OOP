@@ -1,18 +1,39 @@
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class InsigniaDoUsuario {
-    private Insignia insignia;
+    private UUID id;
     private Aluno aluno;
-    private LocalDateTime dataConquista;
+    private Insignia insignia;
+    private LocalDateTime data;
 
-    public InsigniaDoUsuario(Insignia insignia, Aluno aluno) {
-        this.insignia = insignia;
+    // Construtor
+    public InsigniaDoUsuario(Aluno aluno, Insignia insignia, LocalDateTime data) {
+        this.id = UUID.randomUUID();
         this.aluno = aluno;
-        this.dataConquista = LocalDateTime.now();
+        this.insignia = insignia;
+        this.data = data;
     }
 
     // Getters
-    public Insignia getInsignia() { return insignia; }
-    public Aluno getAluno() { return aluno; }
-    public LocalDateTime getDataConquista() { return dataConquista; }
+    public UUID getId() {
+        return id;
+    }
+
+    public Aluno getAluno() {
+        return aluno;
+    }
+
+    public Insignia getInsignia() {
+        return insignia;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    // (Opcional) Setters, se necessário
+    // public void setAluno(Aluno aluno) { this.aluno = aluno; }
+    // public void setInsignia(Insignia insignia) { this.insignia = insignia; }
+    // public void setData(LocalDateTime data) { this.data = data; }
 }

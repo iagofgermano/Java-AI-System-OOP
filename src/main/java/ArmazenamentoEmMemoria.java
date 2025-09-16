@@ -1,32 +1,54 @@
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ArmazenamentoEmMemoria {
-    private Map<UUID, Curso> cursos;
-    private Map<UUID, Aluno> alunos;
-    private Map<UUID, Quiz> quizzes;
 
+    // Mapas para armazenar os dados em memória
+    private final Map<UUID, Curso> cursos = new ConcurrentHashMap<>();
+    private final Map<UUID, Aluno> alunos = new ConcurrentHashMap<>();
+    private final Map<UUID, Quiz> quizzes = new ConcurrentHashMap<>();
+
+    // Construtor
     public ArmazenamentoEmMemoria() {
-        this.cursos = new ConcurrentHashMap<>();
-        this.alunos = new ConcurrentHashMap<>();
-        this.quizzes = new ConcurrentHashMap<>();
+        // Inicialização, se necessário
     }
 
-    public void obterCurso(UUID id) {
-    }
-
-    public void obterAluno(UUID id) {
-    }
-
-    public void obterQuiz(UUID id) {
+    // Métodos para Curso
+    public Curso obterCurso(UUID id) {
+        return cursos.get(id);
     }
 
     public void salvarCurso(Curso curso) {
         cursos.put(curso.getId(), curso);
     }
 
+    public List<Curso> listarCursos() {
+        return new ArrayList<>(cursos.values());
+    }
+
+    // Métodos para Aluno
+    public Aluno obterAluno(UUID id) {
+        return alunos.get(id);
+    }
+
     public void salvarAluno(Aluno aluno) {
         alunos.put(aluno.getId(), aluno);
     }
 
-    public List<Curso> listarCursos() {
-        return new ArrayList<>(cursos.values());
+    public List<Aluno> listarAlunos() {
+        return new ArrayList<>(alunos.values());
+    }
+
+    // Métodos para Quiz
+    public Quiz obterQuiz(UUID id) {
+        return quizzes.get(id);
+    }
+
+    public void salvarQuiz(Quiz quiz) {
+        quizzes.put(quiz.getId(), quiz);
+    }
+
+    public List<Quiz> listarQuizzes() {
+        return new ArrayList<>(quizzes.values());
     }
 }
