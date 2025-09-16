@@ -1,12 +1,15 @@
 public class BlocoCodigo extends BlocoConteudo {
     private String linguagem;
+    private String codigo;
 
-    public BlocoCodigo(String titulo, String conteudo, String linguagem) {
-        super(titulo, conteudo);
+    public BlocoCodigo(int ordem, String linguagem, String codigo) {
+        super(ordem);
         this.linguagem = linguagem;
+        this.codigo = codigo;
     }
 
-    public String getLinguagem() {
-        return linguagem;
+    @Override
+    public String render() {
+        return "```" + linguagem + "\n" + codigo + "\n```";
     }
 }
