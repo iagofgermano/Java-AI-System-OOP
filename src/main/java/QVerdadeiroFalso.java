@@ -8,6 +8,9 @@ public class QVerdadeiroFalso extends Questao {
 
     @Override
     public double pontuar(Resposta resposta) {
-        return (resposta.isVerdadeiroFalso() == correto) ? peso : 0.0;
+        String valor = resposta.getValor().trim().toLowerCase();
+        boolean respostaBool = valor.equals("true") || valor.equals("verdadeiro") || valor.equals("v");
+        return (respostaBool == correto) ? peso : 0.0;
     }
+
 }
