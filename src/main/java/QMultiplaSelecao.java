@@ -1,40 +1,29 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class QMultiplaSelecao extends Questao {
-    private final List<String> opcoes;
-    private int indiceRespostaCorreta;
+    private List<Opcao> opcoes;
+    private Set<Integer> corretas;
 
     public QMultiplaSelecao(String enunciado, double peso) {
         super(enunciado, peso);
         this.opcoes = new ArrayList<>();
+        this.corretas = new HashSet<>();
     }
 
-    public void adicionarOpcao(String opcao) {
+    public void adicionarOpcao(String texto, boolean correta) {
+        Opcao opcao = new Opcao(texto, correta);
         opcoes.add(opcao);
-    }
-
-    public List<String> getOpcoes() {
-        return new ArrayList<>(opcoes);
-    }
-
-    public void setRespostaCorreta(int indice) {
-        if (indice >= 0 && indice < opcoes.size()) {
-            this.indiceRespostaCorreta = indice;
+        if (correta) {
+            corretas.add(opcoes.size() - 1);
         }
     }
 
     @Override
     public double pontuar(Resposta resposta) {
-        try {
-            int indiceResposta = Integer.parseInt(resposta.getValor()) - 1;
-            if (indiceResposta == indiceRespostaCorreta) {
-                return super.peso; // Ponto completo por acertar
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("Alternativa inválida.");
-            return 0.0;
-        }
-        return 0.0;
+        Set<Integer> respostaIndices = resposta.getIndicesResposta();
+        return respostaIndices.equals(corretas) ? peso : 0.0;
     }
 }
