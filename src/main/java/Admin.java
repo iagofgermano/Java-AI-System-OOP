@@ -34,9 +34,4 @@ public class Admin extends Usuario {
             throw new IllegalArgumentException("Curso não pode ser nulo.");
         }
     }
-
-    @Override
-    public String getTipoUsuario() {
-        return "Admin";
-    }
 }

@@ -27,7 +27,7 @@ public class Quiz {
         double nota = 0.0;
         for (int i = 0; i < questoes.size(); i++) {
             Questao q = questoes.get(i);
-            Resposta r = respostas.getResposta(i);
+            Resposta r = respostas.obter(q);
             if (r != null) {
                 nota += q.pontuar(r);
             }

@@ -36,9 +36,4 @@ public class Aluno extends Usuario {
     public List<InsigniaDoUsuario> getInsignias() {
         return new ArrayList<>(insignias); // Retorna cópia defensiva
     }
-
-    @Override
-    public String getTipoUsuario() {
-        return "Aluno";
-    }
 }

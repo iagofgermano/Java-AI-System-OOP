@@ -48,16 +48,4 @@ public class SessaoPlayground implements AutoCloseable {
     public Aluno getAluno() {
         return aluno;
     }
-
-    public TarefaIA getTarefa() {
-        return tarefa;
-    }
-
-    public Optional<Resultado> getUltimoResultado() {
-        return Optional.ofNullable(ultimoResultado);
-    }
-
-    public boolean isAtiva() {
-        return ativa;
-    }
 }
