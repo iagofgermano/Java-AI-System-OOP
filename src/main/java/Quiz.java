@@ -56,7 +56,6 @@ public class Quiz {
         return Math.max(0, 3 - tentativas.size());
     }
 
-    // Getters
     public UUID getId() {
         return id;
     }
@@ -67,5 +66,9 @@ public class Quiz {
 
     public int getNotaMinima() {
         return notaMinima;
+    }
+
+    public void limparTentativasDoAluno(Aluno aluno) {
+        tentativasPorAluno.getOrDefault(aluno, new ArrayList<>()).clear();
     }
 }

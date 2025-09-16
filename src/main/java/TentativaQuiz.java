@@ -5,12 +5,12 @@ public class TentativaQuiz {
 
     private final UUID id;
     private Aluno aluno;
-    private Quiz quiz;
-    private double nota;
-    private boolean aprovado;
-    private LocalDateTime inicio;
-    private LocalDateTime fim;
-    private int numeroTentativa;
+    private final Quiz quiz;
+    private final double nota;
+    private final boolean aprovado;
+    private final LocalDateTime inicio;
+    private final LocalDateTime fim;
+    private final int numeroTentativa;
 
     // Construtor
     public TentativaQuiz(Aluno aluno, Quiz quiz, double nota, boolean aprovado,

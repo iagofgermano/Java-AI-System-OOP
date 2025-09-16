@@ -1,8 +1,8 @@
 import java.util.*;
 
 public class Aluno extends Usuario {
-    private Map<UUID, Progresso> progressoPorAula;
-    private List<InsigniaDoUsuario> insignias;
+    public final Map<UUID, Progresso> progressoPorAula;
+    public final List<InsigniaDoUsuario> insignias;
 
     public Aluno(String nome, String email) {
         super(nome, email);
@@ -11,8 +11,25 @@ public class Aluno extends Usuario {
     }
 
     public void iniciarTrilha(Curso curso) {
-        // Implementação para iniciar uma trilha de aprendizado
-        // Isso pode incluir criar inscrições, inicializar progresso, etc.
+        // Verifica se o curso está publicado antes de permitir a inscrição
+        if (!curso.isPublicado()) {
+            throw new IllegalStateException("Não é possível iniciar trilha em curso não publicado.");
+        }
+
+        // Para cada módulo do curso
+        for (Modulo modulo : curso.getModulos()) {
+            // Para cada aula do módulo
+            for (Aula aula : modulo.getAulas()) {
+                // Cria um novo registro de progresso para o aluno nesta aula, se ainda não existir
+                if (!progressoPorAula.containsKey(aula.getId())) {
+                    Progresso progresso = new Progresso(this, aula);
+                    progressoPorAula.put(aula.getId(), progresso);
+                }
+            }
+        }
+
+        // Opcional: registrar uma inscrição formal no curso (se não existir)
+        // Isso pode ser feito no GestorAcademico, mas aqui garantimos que o aluno esteja "inscrito"
     }
 
     public Progresso obterProgresso(Aula aula) {
@@ -26,11 +43,6 @@ public class Aluno extends Usuario {
 
     protected void adicionarInsignia(InsigniaDoUsuario insignia) {
         insignias.add(insignia);
-    }
-
-    // Getters
-    public Map<UUID, Progresso> getProgressoPorAula() {
-        return new HashMap<>(progressoPorAula); // Retorna cópia defensiva
     }
 
     public List<InsigniaDoUsuario> getInsignias() {

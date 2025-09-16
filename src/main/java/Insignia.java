@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Insignia {
@@ -27,10 +28,18 @@ public class Insignia {
      * @return true se a insígnia foi concedida, false caso contrário
      */
     public boolean conceder(Aluno aluno, Curso curso) {
-        // Lógica de verificação de elegibilidade deve ser implementada aqui
-        // Por exemplo: verificar se o aluno completou o curso
-        // Esta é uma implementação placeholder
-        return false;
+        // Verifica se o aluno concluiu todas as aulas do curso
+        for (Aula aula : curso.listarAulas()) {
+            if (!aula.concluidaPor(aluno)) {
+                return false; // Se alguma aula não foi concluída, não concede a insígnia
+            }
+        }
+
+        // Se todas as aulas foram concluídas, concede a insígnia
+        LocalDateTime data = LocalDateTime.now();
+        InsigniaDoUsuario insigniaDoUsuario = new InsigniaDoUsuario(aluno, this, data);
+        aluno.adicionarInsignia(insigniaDoUsuario); // assumindo que Aluno tem esse método
+        return true;
     }
 
     @Override

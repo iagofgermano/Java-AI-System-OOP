@@ -8,6 +8,7 @@ public class Curso {
     private boolean publicado;
     private List<Modulo> modulos;
     private LocalDateTime criadoEm;
+    private List<Insignia> insignias;
 
     public Curso(String titulo, String descricao) {
         this.id = UUID.randomUUID();
@@ -37,6 +38,18 @@ public class Curso {
             }
         }
         return null;
+    }
+
+    public void addInsignia(Insignia insignia) {
+        insignias.add(insignia);
+    }
+
+    public void removeInsignia(Insignia insignia) {
+        insignias.remove(insignia);
+    }
+
+    public List<Insignia> listarInsignias() {
+        return new ArrayList<>(insignias);
     }
 
     public void publicar() {
