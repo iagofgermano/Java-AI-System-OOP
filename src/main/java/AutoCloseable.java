@@ -1,5 +1,3 @@
-public class AutoCloseable {
-    @Override
-    public void close() {
-    }
+public interface AutoCloseable {
+   public void close();
 }
