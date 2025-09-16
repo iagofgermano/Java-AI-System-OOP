@@ -1,22 +1,31 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RespostaSheet {
+    // Atributo que mapeia Questões para suas respectivas Respostas
     private Map<Questao, Resposta> respostas;
 
+    // Construtor
     public RespostaSheet() {
         this.respostas = new HashMap<>();
     }
 
-    public void adicionarResposta(Questao questao, Resposta resposta) {
+    // Adiciona uma resposta para uma determinada questão
+    public void adicionar(Questao questao, Resposta resposta) {
         respostas.put(questao, resposta);
     }
 
-    public Resposta getResposta(Questao questao) {
+    // Obtém a resposta associada a uma determinada questão
+    public Resposta obter(Questao questao) {
         return respostas.get(questao);
     }
 
-    public Map<Questao, Resposta> getTodasRespostas() {
-        return new HashMap<>(respostas);
+    // Retorna o número total de respostas registradas
+    public int tamanho() {
+        return respostas.size();
+    }
+
+    // Método auxiliar para obter todas as entradas (opcional)
+    public Set<Map.Entry<Questao, Resposta>> getEntradas() {
+        return respostas.entrySet();
     }
 }

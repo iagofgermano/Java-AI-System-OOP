@@ -1,33 +1,44 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Aluno extends Usuario {
-    private String matricula;
-    private List<Inscricao> inscricoes;
+    private Map<UUID, Progresso> progressoPorAula;
     private List<InsigniaDoUsuario> insignias;
 
-    public Aluno(String nome, String email, String senha, String matricula) {
+    public Aluno(String nome, String email) {
         super(nome, email);
-        this.matricula = matricula;
-        this.inscricoes = new ArrayList<>();
+        this.progressoPorAula = new HashMap<>();
         this.insignias = new ArrayList<>();
     }
 
-    // Getters
-    public String getMatricula() { return matricula; }
-    public List<Inscricao> getInscricoes() { return new ArrayList<>(inscricoes); }
-    public List<InsigniaDoUsuario> getInsignias() { return new ArrayList<>(insignias); }
-
-    // Métodos
-    public void adicionarInscricao(Inscricao inscricao) {
-        inscricoes.add(inscricao);
+    public void iniciarTrilha(Curso curso) {
+        // Implementação para iniciar uma trilha de aprendizado
+        // Isso pode incluir criar inscrições, inicializar progresso, etc.
     }
 
-    public void adicionarInsignia(InsigniaDoUsuario insignia) {
+    public Progresso obterProgresso(Aula aula) {
+        return progressoPorAula.get(aula.getId());
+    }
+
+    // Métodos auxiliares para manipulação interna (não especificados no diagrama)
+    protected void adicionarProgresso(Progresso progresso) {
+        progressoPorAula.put(progresso.getAula().getId(), progresso);
+    }
+
+    protected void adicionarInsignia(InsigniaDoUsuario insignia) {
         insignias.add(insignia);
     }
 
-    public String getTipoUsuario(){
+    // Getters
+    public Map<UUID, Progresso> getProgressoPorAula() {
+        return new HashMap<>(progressoPorAula); // Retorna cópia defensiva
+    }
+
+    public List<InsigniaDoUsuario> getInsignias() {
+        return new ArrayList<>(insignias); // Retorna cópia defensiva
+    }
+
+    @Override
+    public String getTipoUsuario() {
         return "Aluno";
     }
 }

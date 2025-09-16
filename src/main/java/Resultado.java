@@ -1,23 +1,26 @@
-import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Resultado {
-    private TentativaQuiz tentativa;
-    private double nota;
-    private LocalDateTime dataAvaliacao;
+    private String resumo;
+    private Map<String, String> metricas;
 
-    public Resultado(TentativaQuiz tentativa) {
-        this.tentativa = tentativa;
-        this.nota = tentativa.getNota();
-        this.dataAvaliacao = LocalDateTime.now();
+    public Resultado(String resumo) {
+        this.resumo = resumo;
+        this.metricas = new HashMap<>();
     }
 
-    // Getters
-    public TentativaQuiz getTentativa() { return tentativa; }
-    public double getNota() { return nota; }
-    public LocalDateTime getDataAvaliacao() { return dataAvaliacao; }
+    public void adicionarMetrica(String nome, String valor) {
+        metricas.put(nome, valor);
+    }
 
     @Override
     public String toString() {
-        return String.format("Resultado: Nota=%.2f, Data=%s", nota, dataAvaliacao);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Resultado{");
+        sb.append("resumo='").append(resumo).append('\'');
+        sb.append(", metricas=").append(metricas);
+        sb.append('}');
+        return sb.toString();
     }
 }
