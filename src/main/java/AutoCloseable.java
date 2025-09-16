@@ -1,4 +1,4 @@
-public class Usuario implements AutoCloseable {
+public class AutoCloseable {
     @Override
     public void close() {
     }
