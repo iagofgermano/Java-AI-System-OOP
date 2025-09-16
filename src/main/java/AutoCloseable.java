@@ -1,3 +1,5 @@
-public interface AutoCloseable {
-    void close();
+public class Usuario implements AutoCloseable {
+    @Override
+    public void close() {
+    }
 }
