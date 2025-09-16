@@ -1,13 +1,13 @@
 public abstract class BlocoConteudo {
-    protected String titulo;
-    protected String conteudo;
+    protected int ordem;
 
-    public BlocoConteudo(String titulo, String conteudo) {
-        this.titulo = titulo;
-        this.conteudo = conteudo;
+    public BlocoConteudo(int ordem) {
+        this.ordem = ordem;
     }
 
-    // Getters
-    public String getTitulo() { return titulo; }
-    public String getConteudo() { return conteudo; }
+    public int getOrdem() {
+        return ordem;
+    }
+
+    public abstract String render();
 }
