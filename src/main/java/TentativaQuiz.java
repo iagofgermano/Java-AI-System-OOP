@@ -3,7 +3,7 @@ import java.util.UUID;
 
 public class TentativaQuiz {
 
-    private UUID id;
+    private final UUID id;
     private Aluno aluno;
     private Quiz quiz;
     private double nota;
@@ -42,47 +42,7 @@ public class TentativaQuiz {
         return quiz;
     }
 
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
-    }
-
     public double getNota() {
         return nota;
-    }
-
-    public void setNota(double nota) {
-        this.nota = nota;
-    }
-
-    public boolean isAprovado() {
-        return aprovado;
-    }
-
-    public void setAprovado(boolean aprovado) {
-        this.aprovado = aprovado;
-    }
-
-    public LocalDateTime getInicio() {
-        return inicio;
-    }
-
-    public void setInicio(LocalDateTime inicio) {
-        this.inicio = inicio;
-    }
-
-    public LocalDateTime getFim() {
-        return fim;
-    }
-
-    public void setFim(LocalDateTime fim) {
-        this.fim = fim;
-    }
-
-    public int getNumeroTentativa() {
-        return numeroTentativa;
-    }
-
-    public void setNumeroTentativa(int numeroTentativa) {
-        this.numeroTentativa = numeroTentativa;
     }
 }

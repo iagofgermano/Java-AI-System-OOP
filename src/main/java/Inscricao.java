@@ -50,8 +50,4 @@ public class Inscricao {
     public StatusInscricao getStatus() {
         return status;
     }
-
-    public void setStatus(StatusInscricao status) {
-        this.status = status;
-    }
 }

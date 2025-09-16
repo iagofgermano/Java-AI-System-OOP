@@ -5,11 +5,7 @@ public abstract class TarefaBase implements TarefaIA {
         this.ativa = true;
     }
 
-    public void validar(Parametros parametros) {
-        if (!ativa) {
-            throw new IllegalStateException("Tarefa não está ativa.");
-        }
-    }
+    public abstract void validar(Parametros parametros);
 
     @Override
     public abstract Resultado executar(Parametros parametros);

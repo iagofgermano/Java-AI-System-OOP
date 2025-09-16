@@ -20,19 +20,6 @@ public class Insignia {
         return nome;
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
-
-    // Setters (se necessário)
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
     /**
      * Concede a insígnia ao aluno se ele atender aos critérios.
      * @param aluno O aluno que pode receber a insígnia

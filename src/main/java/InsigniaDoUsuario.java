@@ -31,9 +31,4 @@ public class InsigniaDoUsuario {
     public LocalDateTime getData() {
         return data;
     }
-
-    // (Opcional) Setters, se necessário
-    // public void setAluno(Aluno aluno) { this.aluno = aluno; }
-    // public void setInsignia(Insignia insignia) { this.insignia = insignia; }
-    // public void setData(LocalDateTime data) { this.data = data; }
 }

@@ -1,15 +1,36 @@
-public class TarefaClassificacaoBinaria extends TarefaBase {
+public class TarefaClassificacaoBinaria extends TarefaBase implements TarefaIA{
+
+    @Override
+    public void validar(Parametros parametros) {
+        // Valida se os parâmetros necessários estão presentes
+        if (!parametros.get("texto").isPresent()) {
+            throw new IllegalArgumentException("Parâmetro 'texto' é obrigatório.");
+        }
+    }
 
     @Override
     public Resultado executar(Parametros parametros) {
         validar(parametros);
 
-        // Simulação de lógica de classificação binária
-        String resumo = "Executada classificação binária com os parâmetros fornecidos.";
-        Resultado resultado = new Resultado(resumo);
-        resultado.adicionarMetrica("acuracia", "0.92");
-        resultado.adicionarMetrica("tempo_execucao_ms", "120");
+        String texto = parametros.get("texto").orElse("");
+        boolean resultado = classificarTexto(texto);
 
-        return resultado;
+        Resultado resultadoObj = new Resultado(
+                "Classificação binária concluída: " + (resultado ? "Positivo" : "Negativo")
+        );
+
+        resultadoObj.adicionarMetrica("texto_analisado", texto);
+        resultadoObj.adicionarMetrica("classificacao", resultado ? "positivo" : "negativo");
+
+        return resultadoObj;
+    }
+
+    private boolean classificarTexto(String texto) {
+        // Simulação simples de classificação binária
+        String textoLower = texto.toLowerCase();
+        return textoLower.contains("ótimo") ||
+                textoLower.contains("bom") ||
+                textoLower.contains("excelente") ||
+                textoLower.contains("maravilhoso");
     }
 }
