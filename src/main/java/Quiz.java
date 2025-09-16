@@ -1,4 +1,5 @@
 import java.util.*;
+import java.time.LocalDateTime;
 
 public class Quiz {
     private UUID id;
@@ -18,8 +19,22 @@ public class Quiz {
     }
 
     public TentativaQuiz submeter(Aluno aluno, RespostaSheet respostas) {
-        TentativaQuiz tentativa = new TentativaQuiz(aluno, this, respostas);
-        tentativasPorAluno.computeIfAbsent(aluno, k -> new ArrayList<>()).add(tentativa);
+        double nota = this.calcularNota(respostas);
+        boolean aprovado = nota >= this.notaMinima;
+
+        LocalDateTime inicio = LocalDateTime.now();
+        LocalDateTime fim = LocalDateTime.now();
+
+        int numeroTentativa = tentativasPorAluno
+                .getOrDefault(aluno, new ArrayList<>())
+                .size() + 1;
+
+        TentativaQuiz tentativa = new TentativaQuiz(aluno, this, nota, aprovado, inicio, fim, numeroTentativa);
+
+        tentativasPorAluno
+                .computeIfAbsent(aluno, k -> new ArrayList<>())
+                .add(tentativa);
+
         return tentativa;
     }
 
