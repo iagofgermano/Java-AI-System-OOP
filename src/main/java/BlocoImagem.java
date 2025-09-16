@@ -1,12 +1,15 @@
 public class BlocoImagem extends BlocoConteudo {
-    private String urlImagem;
+    private String caminho;
+    private String descricaoAlt;
 
-    public BlocoImagem(String titulo, String conteudo, String urlImagem) {
-        super(titulo, conteudo);
-        this.urlImagem = urlImagem;
+    public BlocoImagem(int ordem, String caminho, String descricaoAlt) {
+        super(ordem);
+        this.caminho = caminho;
+        this.descricaoAlt = descricaoAlt;
     }
 
-    public String getUrlImagem() {
-        return urlImagem;
+    @Override
+    public String render() {
+        return "<img src='" + caminho + "' alt='" + descricaoAlt + "' />";
     }
 }
