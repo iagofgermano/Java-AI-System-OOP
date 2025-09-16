@@ -1,5 +1,13 @@
 public class BlocoTexto extends BlocoConteudo {
-    public BlocoTexto(String titulo, String conteudo) {
-        super(titulo, conteudo);
+    private String texto;
+
+    public BlocoTexto(int ordem, String texto) {
+        super(ordem);
+        this.texto = texto;
+    }
+
+    @Override
+    public String render() {
+        return texto;
     }
 }
