@@ -25,6 +25,10 @@ public class TentativaQuiz {
         this.numeroTentativa = numeroTentativa;
     }
 
+    public boolean isAprovado() {
+        return aprovado;
+    }
+
     // Getters e Setters
     public UUID getId() {
         return id;

@@ -20,7 +20,7 @@ public class QUmaEscolha extends Questao {
 
     @Override
     public double pontuar(Resposta resposta) {
-        int respostaIndice = resposta.getIndiceResposta();
+        int respostaIndice = resposta.indiceSelecionado();
         return (respostaIndice == indiceCorreto) ? peso : 0.0;
     }
 }

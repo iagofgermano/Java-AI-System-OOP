@@ -6,11 +6,11 @@ import java.util.UUID;
  */
 public abstract class Usuario {
 
-    private final UUID id;
-    private String nome;
-    private String email;
-    private String senhaHash;    // privado conforme UML
-    private boolean autenticado; // flag de autenticação
+    protected final UUID id;
+    protected String nome;
+    protected String email;
+    protected String senhaHash;    // privado conforme UML
+    protected boolean autenticado; // flag de autenticação
 
     /**
      * Construtor protegido conforme diagrama (#Usuario(...))

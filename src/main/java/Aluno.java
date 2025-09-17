@@ -33,8 +33,28 @@ public class Aluno extends Usuario {
     }
 
     public Progresso obterProgresso(Aula aula) {
-        return progressoPorAula.get(aula.getId());
+        Progresso progresso = progressoPorAula.get(aula.getId());
+        if (progresso == null) {
+            // Se não existe progresso registrado, cria um novo com status NOT_STARTED
+            progresso = new Progresso(this, aula);
+            progressoPorAula.put(aula.getId(), progresso);
+        }
+        return progresso;
     }
+
+    public boolean concluiuAula(Aula aula) {
+        if (aula == null) {
+            return false;
+        }
+
+        Progresso progresso = progressoPorAula.get(aula.getId());
+        if (progresso == null) {
+            return false;
+        }
+
+        return progresso.getStatus() == StatusProgresso.COMPLETED;
+    }
+
 
     // Métodos auxiliares para manipulação interna (não especificados no diagrama)
     protected void adicionarProgresso(Progresso progresso) {

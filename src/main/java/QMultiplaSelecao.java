@@ -23,7 +23,7 @@ public class QMultiplaSelecao extends Questao {
 
     @Override
     public double pontuar(Resposta resposta) {
-        Set<Integer> respostaIndices = resposta.getIndicesResposta();
+        Set<Integer> respostaIndices = resposta.indicesSelecionados();
         return respostaIndices.equals(corretas) ? peso : 0.0;
     }
 }

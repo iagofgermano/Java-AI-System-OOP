@@ -20,7 +20,7 @@ public class Aula {
     }
 
     public void adicionarBloco(String texto) {
-        blocos.add(new BlocoConteudo(texto));
+        blocos.add(new BlocoTexto(1, texto));
     }
 
     public void definirQuiz(Quiz q) {
