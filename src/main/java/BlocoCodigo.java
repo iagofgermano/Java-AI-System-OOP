@@ -8,6 +8,14 @@ public class BlocoCodigo extends BlocoConteudo {
         this.codigo = codigo;
     }
 
+    public String getLinguagem() {
+        return linguagem;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
     @Override
     public String render() {
         return "```" + linguagem + "\n" + codigo + "\n```";

@@ -8,8 +8,8 @@ public class Main {
         GestorAcademico gestor = new GestorAcademico(store);
 
         // === USUÁRIOS ===
-        Admin admin = new Admin("Admin Master", "admin@plataforma.com");
-        Aluno aluno = new Aluno("João Silva", "joao@exemplo.com");
+        Admin admin = new Admin("Admin Master", "admin@plataforma.com", "admin");
+        Aluno aluno = new Aluno("João Silva", "joao@exemplo.com", "1234");
 
         store.salvarAluno(aluno);
 

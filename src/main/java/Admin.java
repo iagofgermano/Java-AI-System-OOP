@@ -3,17 +3,15 @@ import java.util.UUID;
 public class Admin extends Usuario {
 
     // Construtor
-    public Admin(String nome, String email) {
-        super(nome, email);
+    public Admin(String nome, String email, String senha) {
+        super(nome, email, senha);
     }
 
-    // Métodos específicos do Admin
+    public Admin(UUID id, String nome, String email, String senha) {
+        super(id, nome, email, senha);
+    }
 
-    /**
-     * Publica um curso, alterando seu status para publicado.
-     *
-     * @param curso O curso a ser publicado.
-     */
+
     public void publicarCurso(Curso curso) {
         if (curso != null) {
             curso.publicar();
@@ -22,11 +20,6 @@ public class Admin extends Usuario {
         }
     }
 
-    /**
-     * Despublica um curso, alterando seu status para não publicado.
-     *
-     * @param curso O curso a ser despublicado.
-     */
     public void despublicarCurso(Curso curso) {
         if (curso != null) {
             curso.despublicar();

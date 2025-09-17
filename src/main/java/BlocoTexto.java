@@ -6,6 +6,10 @@ public class BlocoTexto extends BlocoConteudo {
         this.texto = texto;
     }
 
+    public String getTexto() {
+        return texto;
+    }
+
     @Override
     public String render() {
         return texto;

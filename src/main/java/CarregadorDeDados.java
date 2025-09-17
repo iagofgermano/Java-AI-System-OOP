@@ -1,203 +1,333 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
+import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 public class CarregadorDeDados {
-
+    private final Map<UUID, Curso> cursos = new HashMap<>();
+    private final Map<UUID, Modulo> modulos = new HashMap<>();
+    private final Map<UUID, Aula> aulas = new HashMap<>();
+    private final Map<UUID, Quiz> quizzes = new HashMap<>();
+    private final Map<UUID, Aluno> alunos = new HashMap<>();
+    private final Map<UUID, Insignia> insignias = new HashMap<>();
+    private final String diretorioBase = "dados";
     public CarregadorDeDados() {
         // Construtor padrão
     }
 
-    /**
-     * Carrega uma lista de cursos a partir de um arquivo TXT.
-     *
-     * @param arquivo caminho do arquivo contendo os dados dos cursos
-     * @return lista de cursos carregados
-     */
-    public List<Curso> carregarCursos(Path arquivo) {
-        List<Curso> cursos = new ArrayList<>();
-        Map<String, Curso> cursosMap = new HashMap<>();
-        Map<String, Modulo> modulosMap = new HashMap<>();
-        Map<String, Aula> aulasMap = new HashMap<>();
-        Map<String, Quiz> quizzesMap = new HashMap<>();
+    public void carregarTodosDados() throws IOException {
+        System.out.println("Carregando dados do diretório: " + diretorioBase);
 
-        try (BufferedReader reader = Files.newBufferedReader(arquivo)) {
-            String linha;
-            Curso cursoAtual = null;
-            Modulo moduloAtual = null;
-            Aula aulaAtual = null;
-            Quiz quizAtual = null;
-            Questao questaoAtual = null;
+        // Carregar em ordem de dependência
+        carregarInsignias(Paths.get(diretorioBase, "insignias.txt"));
+        carregarAlunos(Paths.get(diretorioBase, "alunos.txt"));
+        carregarCursos(Paths.get(diretorioBase, "cursos.txt"));
+        carregarModulos(Paths.get(diretorioBase, "modulos.txt"));
+        carregarAulas(Paths.get(diretorioBase, "aulas.txt"));
+        carregarBlocosTexto(Paths.get(diretorioBase, "blocos_texto.txt"));
+        carregarQuizzes(Paths.get(diretorioBase, "quizzes.txt"));
+        carregarQuestoes(Paths.get(diretorioBase, "questoes.txt"));
 
-            while ((linha = reader.readLine()) != null) {
-                if (linha.trim().isEmpty()) continue;
+        System.out.println("Dados carregados com sucesso!");
+        System.out.println("- Cursos: " + cursos.size());
+        System.out.println("- Módulos: " + modulos.size());
+        System.out.println("- Aulas: " + aulas.size());
+        System.out.println("- Quizzes: " + quizzes.size());
+        System.out.println("- Alunos: " + alunos.size());
+        System.out.println("- Insignias: " + insignias.size());
+    }
 
-                String[] partes = linha.split("\\|");
-                String tipo = partes[0];
+    public List<Aluno> carregarAlunos(Path arquivo) throws IOException {
+        List<Aluno> alunos = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
 
-                switch (tipo) {
-                    case "CURSO":
-                        if (partes.length >= 5) {
-                            String id = partes[1];
-                            String titulo = partes[2];
-                            String descricao = partes[3];
-                            boolean publicado = Boolean.parseBoolean(partes[4]);
+        for (String linha : linhas) {
+            String[] partes = linha.split(";");
+            if (partes.length == 4) {
+                UUID id = UUID.fromString(partes[0]);
+                String nome = partes[1];
+                String email = partes[2];
+                String senhaHash = partes[3];
 
-                            cursoAtual = new Curso(titulo, descricao);
-                            // Setar o ID manualmente se houver setter
-                            cursos.add(cursoAtual);
-                            cursosMap.put(id, cursoAtual);
-                        }
-                        break;
-
-                    case "MODULO":
-                        if (partes.length >= 4 && cursoAtual != null) {
-                            String id = partes[1];
-                            int ordem = Integer.parseInt(partes[2]);
-                            String titulo = partes[3];
-
-                            moduloAtual = new Modulo(ordem, titulo);
-                            cursoAtual.adicionarModulo(moduloAtual);
-                            modulosMap.put(id, moduloAtual);
-                        }
-                        break;
-
-                    case "AULA":
-                        if (partes.length >= 4 && moduloAtual != null) {
-                            String id = partes[1];
-                            int ordem = Integer.parseInt(partes[2]);
-                            int duracaoMin = Integer.parseInt(partes[3]);
-
-                            aulaAtual = new Aula(ordem, duracaoMin);
-                            moduloAtual.adicionarAula(aulaAtual);
-                            aulasMap.put(id, aulaAtual);
-                        }
-                        break;
-
-                    case "BLOCO_TEXTO":
-                        if (partes.length >= 3 && aulaAtual != null) {
-                            int ordem = Integer.parseInt(partes[1]);
-                            String texto = partes[2];
-
-                            BlocoTexto bloco = new BlocoTexto(ordem, texto);
-                            aulaAtual.adicionarBloco(bloco);
-                        }
-                        break;
-
-                    case "BLOCO_CODIGO":
-                        if (partes.length >= 4 && aulaAtual != null) {
-                            int ordem = Integer.parseInt(partes[1]);
-                            String linguagem = partes[2];
-                            String codigo = partes[3];
-
-                            BlocoCodigo bloco = new BlocoCodigo(ordem, linguagem, codigo);
-                            aulaAtual.adicionarBloco(bloco);
-                        }
-                        break;
-
-                    case "BLOCO_IMAGEM":
-                        if (partes.length >= 4 && aulaAtual != null) {
-                            int ordem = Integer.parseInt(partes[1]);
-                            String caminho = partes[2];
-                            String descricaoAlt = partes[3];
-
-                            BlocoImagem bloco = new BlocoImagem(ordem, caminho, descricaoAlt);
-                            aulaAtual.adicionarBloco(bloco);
-                        }
-                        break;
-
-                    case "QUIZ":
-                        if (partes.length >= 3 && aulaAtual != null) {
-                            String id = partes[1];
-                            int notaMinima = Integer.parseInt(partes[2]);
-
-                            quizAtual = new Quiz(notaMinima);
-                            aulaAtual.definirQuiz(quizAtual);
-                            quizzesMap.put(id, quizAtual);
-                        }
-                        break;
-
-                    case "QUESTAO_UMA_ESCOLHA":
-                        if (partes.length >= 5 && quizAtual != null) {
-                            String enunciado = partes[1];
-                            double peso = Double.parseDouble(partes[2]);
-                            int indiceCorreto = Integer.parseInt(partes[3]);
-
-                            questaoAtual = new QUmaEscolha(enunciado, peso);
-                            // Setar indiceCorreto se houver setter
-                            quizAtual.adicionarQuestao(questaoAtual);
-                        }
-                        break;
-
-                    case "QUESTAO_MULTIPLA_SELECAO":
-                        if (partes.length >= 4 && quizAtual != null) {
-                            String enunciado = partes[1];
-                            double peso = Double.parseDouble(partes[2]);
-
-                            questaoAtual = new QMultiplaSelecao(enunciado, peso);
-                            quizAtual.adicionarQuestao(questaoAtual);
-                        }
-                        break;
-
-                    case "OPCAO":
-                        if (partes.length >= 3 && questaoAtual != null) {
-                            String texto = partes[1];
-                            boolean correta = Boolean.parseBoolean(partes[2]);
-
-                            // Adicionar opção à questão (precisa de método apropriado)
-                            if (questaoAtual instanceof QUmaEscolha) {
-                                ((QUmaEscolha) questaoAtual).adicionarOpcao(texto, correta);
-                            } else if (questaoAtual instanceof QMultiplaSelecao) {
-                                ((QMultiplaSelecao) questaoAtual).adicionarOpcao(texto, correta);
-                            }
-                        }
-                        break;
-                }
+                Aluno aluno = new Aluno(nome, email, senhaHash);
+                alunos.add(aluno);
             }
-        } catch (IOException e) {
-            System.err.println("Erro ao ler arquivo de cursos: " + e.getMessage());
-            e.printStackTrace();
+        }
+
+        return alunos;
+    }
+
+    public List<Admin> carregarAdmins(Path arquivo) throws IOException {
+        List<Admin> admins = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (String linha : linhas) {
+            String[] partes = linha.split(";");
+            if (partes.length == 4) {
+                UUID id = UUID.fromString(partes[0]);
+                String nome = partes[1];
+                String email = partes[2];
+                String senhaHash = partes[3];
+
+                Admin admin = new Admin(id, nome, email, senhaHash);
+                admins.add(admin);
+            }
+        }
+
+        return admins;
+    }
+
+    /**
+     * Carrega uma lista de cursos a partir de um arquivo .txt.
+     * Formato esperado: UUID;titulo;descricao
+     */
+    public List<Curso> carregarCursos(Path arquivo) throws IOException {
+        List<Curso> cursos = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (String linha : linhas) {
+            String[] partes = linha.split(";");
+            if (partes.length == 3) {
+                UUID id = UUID.fromString(partes[0]);
+                String titulo = partes[1];
+                String descricao = partes[2];
+
+                Curso curso = new Curso(titulo, descricao);
+                // Se precisar setar o ID manualmente, faça isso aqui (via reflexão ou setter)
+                cursos.add(curso);
+            }
         }
 
         return cursos;
     }
 
-    /**
-     * Carrega uma lista de alunos a partir de um arquivo TXT.
-     *
-     * @param arquivo caminho do arquivo contendo os dados dos alunos
-     * @return lista de alunos carregados
-     */
-    public List<Aluno> carregarAlunos(Path arquivo) {
-        List<Aluno> alunos = new ArrayList<>();
+    public List<Modulo> carregarModulos(Path arquivo) throws IOException {
+        List<Modulo> listaModulos = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
 
-        try (BufferedReader reader = Files.newBufferedReader(arquivo)) {
-            String linha;
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
 
-            while ((linha = reader.readLine()) != null) {
-                if (linha.trim().isEmpty()) continue;
+            String[] partes = linha.split(";");
+            if (partes.length >= 4) {
+                UUID id = UUID.fromString(partes[0]);
+                UUID cursoId = UUID.fromString(partes[1]);
+                int ordem = Integer.parseInt(partes[2]);
+                String titulo = partes[3];
 
-                String[] partes = linha.split("\\|");
+                Modulo modulo = new Modulo(ordem, titulo);
+                modulos.put(id, modulo);
+                listaModulos.add(modulo);
 
-                if (partes.length >= 5 && "ALUNO".equals(partes[0])) {
-                    String id = partes[1];
-                    String nome = partes[2];
-                    String email = partes[3];
-                    String senhaHash = partes[4];
-
-                    Aluno aluno = new Aluno(nome, email);
-                    // Aqui você precisaria de um setter para senhaHash se necessário
-                    alunos.add(aluno);
+                // Associar ao curso
+                Curso curso = cursos.get(cursoId);
+                if (curso != null) {
+                    curso.adicionarModulo(modulo);
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Erro ao ler arquivo de alunos: " + e.getMessage());
-            e.printStackTrace();
+        }
+        return listaModulos;
+    }
+
+    public List<Aula> carregarAulas(Path arquivo) throws IOException {
+        List<Aula> listaAulas = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
+
+            String[] partes = linha.split(";");
+            if (partes.length >= 4) {
+                UUID id = UUID.fromString(partes[0]);
+                UUID moduloId = UUID.fromString(partes[1]);
+                int ordem = Integer.parseInt(partes[2]);
+                int duracaoMin = Integer.parseInt(partes[3]);
+
+                Aula aula = new Aula(ordem, duracaoMin);
+                aulas.put(id, aula);
+                listaAulas.add(aula);
+
+                // Associar ao módulo
+                Modulo modulo = modulos.get(moduloId);
+                if (modulo != null) {
+                    modulo.adicionarAula(aula);
+                }
+            }
+        }
+        return listaAulas;
+    }
+
+    public List<BlocoTexto> carregarBlocosTexto(Path arquivo) throws IOException {
+        List<BlocoTexto> listaBlocos = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
+
+            String[] partes = linha.split(";", 4); // Limita para não dividir o texto
+            if (partes.length >= 4) {
+                UUID id = UUID.fromString(partes[0]);
+                UUID aulaId = UUID.fromString(partes[1]);
+                int ordem = Integer.parseInt(partes[2]);
+                String texto = partes[3];
+
+                BlocoTexto bloco = new BlocoTexto(ordem, texto);
+                listaBlocos.add(bloco);
+
+                // Associar à aula
+                Aula aula = aulas.get(aulaId);
+                if (aula != null) {
+                    aula.adicionarBloco(bloco);
+                }
+            }
+        }
+        return listaBlocos;
+    }
+
+    public List<Quiz> carregarQuizzes(Path arquivo) throws IOException {
+        List<Quiz> listaQuizzes = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
+
+            String[] partes = linha.split(";");
+            if (partes.length >= 3) {
+                UUID id = UUID.fromString(partes[0]);
+                UUID aulaId = UUID.fromString(partes[1]);
+                int notaMinima = Integer.parseInt(partes[2]);
+
+                Quiz quiz = new Quiz(notaMinima);
+                quizzes.put(id, quiz);
+                listaQuizzes.add(quiz);
+
+                // Associar à aula
+                Aula aula = aulas.get(aulaId);
+                if (aula != null) {
+                    aula.definirQuiz(quiz);
+                }
+            }
+        }
+        return listaQuizzes;
+    }
+
+    public List<Questao> carregarQuestoes(Path arquivo) throws IOException {
+        List<Questao> listaQuestoes = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
+
+            String[] partes = linha.split(";", 6); // Limita para não dividir os dados extras
+            if (partes.length >= 6) {
+                UUID id = UUID.fromString(partes[0]);
+                UUID quizId = UUID.fromString(partes[1]);
+                String tipo = partes[2];
+                String enunciado = partes[3];
+                double peso = Double.parseDouble(partes[4]);
+                String dadosExtras = partes[5];
+
+                Questao questao = criarQuestaoPorTipo(tipo, enunciado, peso, dadosExtras);
+                if (questao != null) {
+                    listaQuestoes.add(questao);
+
+                    // Associar ao quiz
+                    Quiz quiz = quizzes.get(quizId);
+                    if (quiz != null) {
+                        quiz.adicionarQuestao(questao);
+                    }
+                }
+            }
+        }
+        return listaQuestoes;
+    }
+
+    private Questao criarQuestaoPorTipo(String tipo, String enunciado, double peso, String dadosExtras) {
+        switch (tipo) {
+            case "UMA_ESCOLHA":
+                return criarQuestaoUmaEscolha(enunciado, peso, dadosExtras);
+            case "MULTIPLA_SELECAO":
+                return criarQuestaoMultiplaSelecao(enunciado, peso, dadosExtras);
+            case "VERDADEIRO_FALSO":
+                return criarQuestaoVerdadeiroFalso(enunciado, peso, dadosExtras);
+            default:
+                System.err.println("Tipo de questão desconhecido: " + tipo);
+                return null;
+        }
+    }
+
+    private Questao criarQuestaoUmaEscolha(String enunciado, double peso, String dadosExtras) {
+        String[] partes = dadosExtras.split("\\|");
+        QUmaEscolha questao = new QUmaEscolha(enunciado, peso);
+
+        // Última parte é o índice correto
+        int indiceCorreto = Integer.parseInt(partes[partes.length - 1]);
+
+        // Adicionar opções
+        for (int i = 0; i < partes.length - 1; i++) {
+            boolean correta = (i == indiceCorreto);
+            questao.adicionarOpcao(partes[i], correta);
         }
 
-        return alunos;
+        return questao;
     }
+
+    private Questao criarQuestaoMultiplaSelecao(String enunciado, double peso, String dadosExtras) {
+        String[] partes = dadosExtras.split("\\|");
+        QMultiplaSelecao questao = new QMultiplaSelecao(enunciado, peso);
+
+        // Última parte são os índices corretos
+        String[] indicesCorretosStr = partes[partes.length - 1].split(",");
+        Set<Integer> indicesCorretos = new HashSet<>();
+        for (String indiceStr : indicesCorretosStr) {
+            indicesCorretos.add(Integer.parseInt(indiceStr.trim()));
+        }
+
+        // Adicionar opções
+        for (int i = 0; i < partes.length - 1; i++) {
+            boolean correta = indicesCorretos.contains(i);
+            questao.adicionarOpcao(partes[i], correta);
+        }
+
+        return questao;
+    }
+
+    private Questao criarQuestaoVerdadeiroFalso(String enunciado, double peso, String dadosExtras) {
+        boolean respostaCorreta = Boolean.parseBoolean(dadosExtras);
+        return new QVerdadeiroFalso(enunciado, peso, respostaCorreta);
+    }
+
+    public List<Insignia> carregarInsignias(Path arquivo) throws IOException {
+        List<Insignia> listaInsignias = new ArrayList<>();
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (int i = 1; i < linhas.size(); i++) {
+            String linha = linhas.get(i).trim();
+            if (linha.isEmpty()) continue;
+
+            String[] partes = linha.split(";");
+            if (partes.length >= 3) {
+                UUID id = UUID.fromString(partes[0]);
+                String nome = partes[1];
+                String descricao = partes[2];
+
+                Insignia insignia = new Insignia(nome, descricao);
+                insignias.put(id, insignia);
+                listaInsignias.add(insignia);
+            }
+        }
+        return listaInsignias;
+    }
+
+    // Getters para acesso aos dados carregados
+    public Map<UUID, Curso> getCursos() { return cursos; }
+    public Map<UUID, Modulo> getModulos() { return modulos; }
+    public Map<UUID, Aula> getAulas() { return aulas; }
+    public Map<UUID, Quiz> getQuizzes() { return quizzes; }
+    public Map<UUID, Aluno> getAlunos() { return alunos; }
+    public Map<UUID, Insignia> getInsignias() { return insignias; }
 }

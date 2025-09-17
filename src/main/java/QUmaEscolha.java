@@ -23,4 +23,12 @@ public class QUmaEscolha extends Questao {
         int respostaIndice = resposta.indiceSelecionado();
         return (respostaIndice == indiceCorreto) ? peso : 0.0;
     }
+
+    public List<Opcao> getOpcoes() {
+        return opcoes;
+    }
+
+    public int getIndiceCorreto() {
+        return indiceCorreto;
+    }
 }

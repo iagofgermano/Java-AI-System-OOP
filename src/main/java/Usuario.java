@@ -15,59 +15,61 @@ public abstract class Usuario {
     /**
      * Construtor protegido conforme diagrama (#Usuario(...))
      */
-    protected Usuario(String nome, String email) {
+    protected Usuario(String nome, String email, String senha) {
         this.id = UUID.randomUUID();
         this.nome = Objects.requireNonNull(nome, "Nome não pode ser nulo");
         this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
-        this.senhaHash = null;
+        this.senhaHash = hashSenha(senha);
         this.autenticado = false;
     }
 
-    /**
-     * Tenta autenticar este usuário usando email + senha.
-     * Se o email informado não for o do usuário, falha (autenticado = false).
-     * Método tem retorno void conforme UML — resultado é guardado em 'autenticado'.
-     */
+    protected Usuario(UUID id, String nome, String email, String senha) {
+        this.id = id;
+        this.nome = Objects.requireNonNull(nome, "Nome não pode ser nulo");
+        this.email = Objects.requireNonNull(email, "Email não pode ser nulo");
+        this.senhaHash = senha;
+        this.autenticado = false;
+    }
+
     public void autenticar(String email, String senha) {
-        if (!Objects.equals(this.email, email) || senha == null || senha.isEmpty() || this.senhaHash == null) {
-            this.autenticado = false;
-            return;
+        try {
+            if (!Objects.equals(this.email, email) || senha == null || senha.isEmpty() || this.senhaHash == null) {
+                this.autenticado = false;
+                throw new Exception("Falha na autenticação");
+            }
+            this.autenticado = this.senhaHash.equals(hashSenha(senha));
+            if (!this.autenticado) {
+                throw new Exception("Senha incorreta");
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-        this.autenticado = this.senhaHash.equals(hashSenha(senha));
     }
 
-    /**
-     * Desloga o usuário (marca como não autenticado)
-     */
     public void sair() {
-        this.autenticado = false;
+        try {
+            if(!this.autenticado) {
+                throw new Exception("Usuário não estava logado");
+            }
+            this.autenticado = false;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
-    /**
-     * Getter do id (conforme UML: getId(): UUID)
-     */
     public UUID getId() {
         return id;
     }
 
     /* ---------- Helpers protegidos (não expostos no UML) ---------- */
 
-    /**
-     * Permite subclasses definirem a senha (armazenada como hash).
-     * Mantido protegido para não ser público.
-     */
     protected void setSenha(String senha) {
         this.senhaHash = hashSenha(senha);
     }
 
-    /**
-     * Função simples de hash (exemplo). Em produção, use bcrypt/Argon2/etc.
-     */
     protected String hashSenha(String senha) {
         return Integer.toString(Objects.requireNonNull(senha).hashCode());
     }
-
-    /* ---------- Getters/setters auxiliares (opc.) ---------- */
 
     public String getNome() {
         return nome;
@@ -87,6 +89,10 @@ public abstract class Usuario {
 
     public boolean isAutenticado() {
         return autenticado;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
     }
 
     @Override

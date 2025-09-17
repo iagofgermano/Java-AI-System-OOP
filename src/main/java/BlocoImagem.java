@@ -8,6 +8,14 @@ public class BlocoImagem extends BlocoConteudo {
         this.descricaoAlt = descricaoAlt;
     }
 
+    public String getCaminho() {
+        return caminho;
+    }
+
+    public String getDescricaoAlt() {
+        return descricaoAlt;
+    }
+
     @Override
     public String render() {
         return "<img src='" + caminho + "' alt='" + descricaoAlt + "' />";

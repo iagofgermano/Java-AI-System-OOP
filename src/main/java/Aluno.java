@@ -4,12 +4,17 @@ public class Aluno extends Usuario {
     public final Map<UUID, Progresso> progressoPorAula;
     public final List<InsigniaDoUsuario> insignias;
 
-    public Aluno(String nome, String email) {
-        super(nome, email);
+    public Aluno(String nome, String email, String senha) {
+        super(nome, email, senha);
         this.progressoPorAula = new HashMap<>();
         this.insignias = new ArrayList<>();
     }
 
+    public Aluno(UUID id, String nome, String email, String senha) {
+        super(id, nome, email, senha);
+        this.progressoPorAula = new HashMap<>();
+        this.insignias = new ArrayList<>();
+    }
     public void iniciarTrilha(Curso curso) {
         // Verifica se o curso está publicado antes de permitir a inscrição
         if (!curso.isPublicado()) {
