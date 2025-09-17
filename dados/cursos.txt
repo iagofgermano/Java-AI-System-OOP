@@ -1,0 +1,10 @@
+CURSO;34e38fe2-b93d-48a5-a160-75cca471d653;Introdução à Programação;Curso básico de lógica de programação.;true
+MODULO;9afdd71f-ea90-4133-8f55-e82b16e863cc;1;Fundamentos
+AULA;6f5080fc-e0db-4447-8a61-955e3cd53954;1;30
+BLOCO_TEXTO;1;Bem-vindo ao curso!
+BLOCO_CODIGO;2;java;System.out.println("Olá Mundo");
+QUIZ;0957868b-3e25-47ab-9ef8-048f7e2a36cd;7
+QUESTAO_UMA_ESCOLHA;Qual é a saída do código apresentado?;5,000000;1
+OPCAO;Erro;false
+OPCAO;Olá Mundo;true
+OPCAO;Nada;false

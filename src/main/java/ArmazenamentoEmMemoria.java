@@ -140,7 +140,7 @@ public class ArmazenamentoEmMemoria {
 
                 for (Curso curso : cursos.values()) {
                     // Escrever cabeçalho do curso
-                    writer.write(String.format("CURSO|%s|%s|%s|%s%n",
+                    writer.write(String.format("CURSO;%s;%s;%s;%s%n",
                             curso.getId().toString(),
                             curso.getTitulo(),
                             curso.getDescricao(),
@@ -148,14 +148,14 @@ public class ArmazenamentoEmMemoria {
 
                     // Escrever módulos
                     for (Modulo modulo : curso.getModulos()) {
-                        writer.write(String.format("MODULO|%s|%d|%s%n",
+                        writer.write(String.format("MODULO;%s;%d;%s%n",
                                 modulo.getId().toString(),
                                 modulo.getOrdem(),
                                 modulo.getTitulo()));
 
                         // Escrever aulas
                         for (Aula aula : modulo.getAulas()) {
-                            writer.write(String.format("AULA|%s|%d|%d%n",
+                            writer.write(String.format("AULA;%s;%d;%d%n",
                                     aula.getId().toString(),
                                     aula.getOrdem(),
                                     aula.getDuracaoMin()));
@@ -164,15 +164,15 @@ public class ArmazenamentoEmMemoria {
                             for (BlocoConteudo bloco : aula.getBlocos()) {
                                 if (bloco instanceof BlocoTexto) {
                                     BlocoTexto bt = (BlocoTexto) bloco;
-                                    writer.write(String.format("BLOCO_TEXTO|%d|%s%n",
+                                    writer.write(String.format("BLOCO_TEXTO;%d;%s%n",
                                             bt.getOrdem(), bt.getTexto()));
                                 } else if (bloco instanceof BlocoCodigo) {
                                     BlocoCodigo bc = (BlocoCodigo) bloco;
-                                    writer.write(String.format("BLOCO_CODIGO|%d|%s|%s%n",
+                                    writer.write(String.format("BLOCO_CODIGO;%d;%s;%s%n",
                                             bc.getOrdem(), bc.getLinguagem(), bc.getCodigo()));
                                 } else if (bloco instanceof BlocoImagem) {
                                     BlocoImagem bi = (BlocoImagem) bloco;
-                                    writer.write(String.format("BLOCO_IMAGEM|%d|%s|%s%n",
+                                    writer.write(String.format("BLOCO_IMAGEM;%d;%s;%s%n",
                                             bi.getOrdem(), bi.getCaminho(), bi.getDescricaoAlt()));
                                 }
                             }
@@ -180,7 +180,7 @@ public class ArmazenamentoEmMemoria {
                             // Escrever quiz se existir
                             if (aula.getQuiz() != null) {
                                 Quiz quiz = aula.getQuiz();
-                                writer.write(String.format("QUIZ|%s|%d%n",
+                                writer.write(String.format("QUIZ;%s;%d%n",
                                         quiz.getId().toString(),
                                         quiz.getNotaMinima()));
 
@@ -188,13 +188,13 @@ public class ArmazenamentoEmMemoria {
                                 for (Questao questao : quiz.getQuestoes()) {
                                     if (questao instanceof QUmaEscolha) {
                                         QUmaEscolha q = (QUmaEscolha) questao;
-                                        writer.write(String.format("QUESTAO_UMA_ESCOLHA|%s|%f|%d%n",
+                                        writer.write(String.format("QUESTAO_UMA_ESCOLHA;%s;%f;%d%n",
                                                 q.getEnunciado(), q.getPeso(), q.getIndiceCorreto()));
 
                                         // Escrever opções
                                         for (int i = 0; i < q.getOpcoes().size(); i++) {
                                             Opcao opcao = q.getOpcoes().get(i);
-                                            writer.write(String.format("OPCAO|%s|%s%n",
+                                            writer.write(String.format("OPCAO;%s;%s%n",
                                                     opcao.getTexto(), opcao.isCorreta()));
                                         }
                                     } else if (questao instanceof QMultiplaSelecao){
@@ -220,7 +220,7 @@ public class ArmazenamentoEmMemoria {
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
                 for (Aluno aluno : alunos.values()) {
-                    writer.write(String.format("ALUNO|%s|%s|%s|%s%n",
+                    writer.write(String.format("ALUNO;%s;%s;%s;%s%n",
                             aluno.getId().toString(),
                             aluno.getNome(),
                             aluno.getEmail(),
