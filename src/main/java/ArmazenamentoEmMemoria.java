@@ -13,7 +13,10 @@ public class ArmazenamentoEmMemoria {
     private final Map<UUID, Modulo> modulos;
     private final Map<UUID, Aula> aulas;
     private final Map<UUID, Admin> admins;
-    public Map<UUID, Inscricao> inscricoes = new HashMap<>();
+    private final Map<UUID, Inscricao> inscricoes;
+    private final CarregadorDeDados carregador;
+
+
 
     // Diretórios para persistência
     private final Path diretorioDados;
@@ -25,18 +28,14 @@ public class ArmazenamentoEmMemoria {
         this.modulos = new ConcurrentHashMap<>();
         this.aulas = new ConcurrentHashMap<>();
         this.admins = new ConcurrentHashMap<>();
+        this.inscricoes = new ConcurrentHashMap<>();
+        this.carregador = new CarregadorDeDados();
+        try {
+            carregador.carregarTodosDados();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.diretorioDados = Paths.get("dados");
-        criarDiretoriosSeNaoExistir();
-    }
-
-    public ArmazenamentoEmMemoria(Path diretorioDados) {
-        this.cursos = new ConcurrentHashMap<>();
-        this.alunos = new ConcurrentHashMap<>();
-        this.quizzes = new ConcurrentHashMap<>();
-        this.modulos = new ConcurrentHashMap<>();
-        this.aulas = new ConcurrentHashMap<>();
-        this.admins = new ConcurrentHashMap<>();
-        this.diretorioDados = diretorioDados;
         criarDiretoriosSeNaoExistir();
     }
 
@@ -146,6 +145,26 @@ public class ArmazenamentoEmMemoria {
         return admins;
     }
 
+    public Map<UUID, Curso> getCursos() {
+        return cursos;
+    }
+
+    public Map<UUID, Aula> getAulas() {
+        return aulas;
+    }
+
+    public Map<UUID, Modulo> getModulos() {
+        return modulos;
+    }
+
+    public Map<UUID, Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public Map<UUID, Inscricao> getInscricoes() {
+        return inscricoes;
+    }
+
     // =========================
     // MÉTODOS PARA PERSISTÊNCIA EM ARQUIVOS
     // =========================
@@ -153,12 +172,23 @@ public class ArmazenamentoEmMemoria {
     public void persistirCursos() {
         try {
             Path arquivoCursos = diretorioDados.resolve("cursos.txt");
-            try (BufferedWriter writer = Files.newBufferedWriter(arquivoCursos,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            Path arquivoModulos = diretorioDados.resolve("modulos.txt");
+            Path arquivoAulas = diretorioDados.resolve("aulas.txt");
+            Path arquivoBlocos = diretorioDados.resolve("blocos.txt");
+            Path arquivoQuizzes = diretorioDados.resolve("quizzes.txt");
+            Path arquivoQuestoes = diretorioDados.resolve("questoes.txt");
+            try (
+                    BufferedWriter writerCursos = Files.newBufferedWriter(arquivoCursos, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    BufferedWriter writerModulos = Files.newBufferedWriter(arquivoModulos, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    BufferedWriter writerAulas = Files.newBufferedWriter(arquivoAulas, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    BufferedWriter writerBlocos = Files.newBufferedWriter(arquivoBlocos, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    BufferedWriter writerQuizzes = Files.newBufferedWriter(arquivoQuizzes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    BufferedWriter writerQuestoes = Files.newBufferedWriter(arquivoQuestoes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+            ) {
 
                 for (Curso curso : cursos.values()) {
                     // Escrever cabeçalho do curso
-                    writer.append(String.format("CURSO;%s;%s;%s;%s%n",
+                    writerCursos.append(String.format("CURSO;%s;%s;%s;%s%n",
                             curso.getId().toString(),
                             curso.getTitulo(),
                             curso.getDescricao(),
@@ -166,15 +196,17 @@ public class ArmazenamentoEmMemoria {
 
                     // Escrever módulos
                     for (Modulo modulo : curso.getModulos()) {
-                        writer.append(String.format("MODULO;%s;%d;%s%n",
+                        writerModulos.append(String.format("MODULO;%s;%s;%d;%s%n",  // adicionado cursoId
                                 modulo.getId().toString(),
+                                curso.getId().toString(),  // <-- ID do curso
                                 modulo.getOrdem(),
                                 modulo.getTitulo()));
 
                         // Escrever aulas
                         for (Aula aula : modulo.getAulas()) {
-                            writer.append(String.format("AULA;%s;%d;%d%n",
+                            writerAulas.append(String.format("AULA;%s;%s;%d;%d%n",  // adicionado moduloId
                                     aula.getId().toString(),
+                                    modulo.getId().toString(),  // <-- ID do módulo
                                     aula.getOrdem(),
                                     aula.getDuracaoMin()));
 
@@ -182,50 +214,64 @@ public class ArmazenamentoEmMemoria {
                             for (BlocoConteudo bloco : aula.getBlocos()) {
                                 if (bloco instanceof BlocoTexto) {
                                     BlocoTexto bt = (BlocoTexto) bloco;
-                                    writer.append(String.format("BLOCO_TEXTO;%d;%s;%s%n",
+                                    writerBlocos.append(String.format("BLOCO_TEXTO;%d;%s;%s%n",
                                             bt.getOrdem(), bt.getTexto(), aula.getId().toString()));
                                 } else if (bloco instanceof BlocoCodigo) {
                                     BlocoCodigo bc = (BlocoCodigo) bloco;
-                                    writer.append(String.format("BLOCO_CODIGO;%d;%s;%s%n",
-                                            bc.getOrdem(), bc.getLinguagem(), bc.getCodigo()));
+                                    writerBlocos.append(String.format("BLOCO_CODIGO;%d;%s;%s;%s%n",
+                                            bc.getOrdem(), bc.getLinguagem(), bc.getCodigo(), aula.getId().toString()));
                                 } else if (bloco instanceof BlocoImagem) {
                                     BlocoImagem bi = (BlocoImagem) bloco;
-                                    writer.append(String.format("BLOCO_IMAGEM;%d;%s;%s%n",
-                                            bi.getOrdem(), bi.getCaminho(), bi.getDescricaoAlt()));
+                                    writerBlocos.append(String.format("BLOCO_IMAGEM;%d;%s;%s;%s%n",
+                                            bi.getOrdem(), bi.getCaminho(), bi.getDescricaoAlt(), aula.getId().toString()));
                                 }
                             }
 
                             // Escrever quiz se existir
                             if (aula.getQuiz() != null) {
                                 Quiz quiz = aula.getQuiz();
-                                writer.append(String.format("QUIZ;%s;%d%n",
+                                writerQuizzes.append(String.format("QUIZ;%s;%s;%d%n",  // adicionado aulaId
                                         quiz.getId().toString(),
+                                        aula.getId().toString(),  // <-- ID da aula
                                         quiz.getNotaMinima()));
 
                                 // Escrever questões
                                 for (Questao questao : quiz.getQuestoes()) {
                                     if (questao instanceof QUmaEscolha) {
                                         QUmaEscolha q = (QUmaEscolha) questao;
-                                        writer.append(String.format("QUESTAO_UMA_ESCOLHA;%s;%f;%d%n",
-                                                q.getEnunciado(), q.getPeso(), q.getIndiceCorreto()));
+                                        // Serializar opções como pipe-separated
+                                        String opcoesStr = q.getOpcoes().stream()
+                                                .map(op -> op.getTexto().replace("|", "\\|")) // escapar pipe
+                                                .collect(Collectors.joining("|"));
+                                        writerQuestoes.append(String.format("QUESTAO_UMA_ESCOLHA;%s;%s;%f;%d;%s%n",
+                                                quiz.getId().toString(),  // <-- quizId
+                                                q.getEnunciado().replace(";", "\\;"),
+                                                q.getPeso(),
+                                                q.getIndiceCorreto(),
+                                                opcoesStr));
 
-                                        // Escrever opções
-                                        for (int i = 0; i < q.getOpcoes().size(); i++) {
-                                            Opcao opcao = q.getOpcoes().get(i);
-                                            writer.append(String.format("OPCAO;%s;%s%n",
-                                                    opcao.getTexto(), opcao.isCorreta()));
-                                        }
-                                    } else if (questao instanceof QMultiplaSelecao){
+                                    } else if (questao instanceof QMultiplaSelecao) {
                                         QMultiplaSelecao q = (QMultiplaSelecao) questao;
-                                        writer.append(String.format("QUESTAO_MULTIPLA_SELECAO;%s;%f%n", q.getEnunciado(), q.getPeso()));
-                                        for (int i = 0; i < q.getOpcoes().size(); i++) {
-                                            Opcao opcao = q.getOpcoes().get(i);
-                                            writer.append(String.format("OPCAO;%s;%s%n",
-                                                    opcao.getTexto(), opcao.isCorreta()));
-                                        }
-                                    } else {
+                                        String opcoesStr = q.getOpcoes().stream()
+                                                .map(op -> op.getTexto().replace("|", "\\|"))
+                                                .collect(Collectors.joining("|"));
+                                        String indicesCorretos = q.getOpcoes().stream()
+                                                .filter(Opcao::isCorreta)
+                                                .map(op -> String.valueOf(q.getOpcoes().indexOf(op)))
+                                                .collect(Collectors.joining(","));
+                                        writerQuestoes.append(String.format("QUESTAO_MULTIPLA_SELECAO;%s;%s;%f;%s;%s%n",
+                                                quiz.getId().toString(),
+                                                q.getEnunciado().replace(";", "\\;"),
+                                                q.getPeso(),
+                                                opcoesStr,
+                                                indicesCorretos));
+                                    } else if (questao instanceof QVerdadeiroFalso) {
                                         QVerdadeiroFalso q = (QVerdadeiroFalso) questao;
-                                        writer.append(String.format("QUESTAO_VERDADEIRO_FALSO;%s;%f%n", q.getEnunciado(), q.getPeso(), q.isCorreto()));
+                                        writerQuestoes.append(String.format("QUESTAO_VERDADEIRO_FALSO;%s;%s;%f;%s%n",
+                                                quiz.getId().toString(),
+                                                q.getEnunciado().replace(";", "\\;"),
+                                                q.getPeso(),
+                                                q.isCorreto()));
                                     }
                                 }
                             }
@@ -245,7 +291,7 @@ public class ArmazenamentoEmMemoria {
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
                 for (Aluno aluno : alunos.values()) {
-                    writer.write(String.format("ALUNO;%s;%s;%s;%s%n",
+                    writer.append(String.format("ALUNO;%s;%s;%s;%s%n",
                             aluno.getId().toString(),
                             aluno.getNome(),
                             aluno.getEmail(),
@@ -264,7 +310,7 @@ public class ArmazenamentoEmMemoria {
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
                 for (Admin admin : admins.values()) {
-                    writer.write(String.format("ADMIN;%s;%s;%s;%s%n",
+                    writer.append(String.format("ADMIN;%s;%s;%s;%s%n",
                             admin.getId().toString(),
                             admin.getNome(),
                             admin.getEmail(),

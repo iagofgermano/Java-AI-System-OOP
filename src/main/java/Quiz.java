@@ -14,6 +14,13 @@ public class Quiz {
         this.tentativasPorAluno = new HashMap<>();
     }
 
+    public Quiz(UUID id, int notaMinima) {
+        this.id = id;
+        this.questoes = new ArrayList<>();
+        this.notaMinima = notaMinima;
+        this.tentativasPorAluno = new HashMap<>();
+    }
+
     public void adicionarQuestao(Questao q) {
         questoes.add(q);
     }

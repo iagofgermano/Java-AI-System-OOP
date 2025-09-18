@@ -3,14 +3,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
-    private static ArmazenamentoEmMemoria armazenamento = new ArmazenamentoEmMemoria();
-    private static GestorAcademico gestor = new GestorAcademico(armazenamento);
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final ArmazenamentoEmMemoria armazenamento = new ArmazenamentoEmMemoria();
+    private static final CarregadorDeDados carregador =  new CarregadorDeDados();
+    private static final GestorAcademico gestor = new GestorAcademico(armazenamento);
     private static Usuario usuarioLogado = null;
 
     public static void main(String[] args) {
-        CarregadorDeDados carregador =  new CarregadorDeDados();
-
+        try {
+            carregador.carregarTodosDados();
+            armazenamento.getAlunos().putAll(carregador.getAlunos());
+            armazenamento.getCursos().putAll(carregador.getCursos());
+            armazenamento.getAdmins().putAll(carregador.getAdmins());
+            armazenamento.getModulos().putAll(carregador.getModulos());
+            armazenamento.getAulas().putAll(carregador.getAulas());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("🎓 Bem-vindo ao Sistema de ensino de IA CLI 🎓");
         while (true) {
             if (usuarioLogado == null) {
@@ -53,7 +62,7 @@ public class Main {
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
 
-        Optional<Aluno> alunoOpt = armazenamento.getAlunos().values().stream()
+        Optional<Aluno> alunoOpt = carregador.getAlunos().values().stream()
                 .filter(a -> a.email.equals(email))
                 .findFirst();
 
@@ -71,7 +80,7 @@ public class Main {
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
 
-        Optional<Admin> adminOpt = armazenamento.getAdmins().values().stream()
+        Optional<Admin> adminOpt = carregador.getAdmins().values().stream()
                 .filter(a -> a instanceof Admin && a.email.equals(email))
                 .map(a -> (Admin) a)
                 .findFirst();
