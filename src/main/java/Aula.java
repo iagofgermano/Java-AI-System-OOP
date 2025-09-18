@@ -15,6 +15,14 @@ public class Aula {
         this.quiz = null;
     }
 
+    public Aula(UUID id, int ordem, int duracaoMin) {
+        this.id = id;
+        this.ordem = ordem;
+        this.duracaoMin = duracaoMin;
+        this.blocos = new ArrayList<>();
+        this.quiz = null;
+    }
+
     public void adicionarBloco(BlocoConteudo b) {
         blocos.add(b);
     }

@@ -31,7 +31,7 @@ public abstract class Usuario {
         this.autenticado = false;
     }
 
-    public void autenticar(String email, String senha) {
+    public boolean autenticar(String email, String senha) {
         try {
             if (!Objects.equals(this.email, email) || senha == null || senha.isEmpty() || this.senhaHash == null) {
                 this.autenticado = false;
@@ -44,6 +44,7 @@ public abstract class Usuario {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+        return autenticado;
     }
 
     public void sair() {

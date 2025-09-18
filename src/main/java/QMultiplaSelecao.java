@@ -26,4 +26,8 @@ public class QMultiplaSelecao extends Questao {
         Set<Integer> respostaIndices = resposta.indicesSelecionados();
         return respostaIndices.equals(corretas) ? peso : 0.0;
     }
+
+    public List<Opcao> getOpcoes() {
+        return opcoes;
+    }
 }

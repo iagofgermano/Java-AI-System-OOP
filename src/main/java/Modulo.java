@@ -13,6 +13,13 @@ public class Modulo {
         this.aulas = new ArrayList<>();
     }
 
+    public Modulo(UUID id, int ordem, String titulo) {
+        this.id = id;
+        this.ordem = ordem;
+        this.titulo = titulo;
+        this.aulas = new ArrayList<>();
+    }
+
     public void adicionarAula(Aula a) {
         aulas.add(a);
     }

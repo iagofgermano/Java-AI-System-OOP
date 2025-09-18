@@ -19,6 +19,14 @@ public class Curso {
         this.criadoEm = LocalDateTime.now();
     }
 
+    public Curso(UUID id, String titulo, String descricao) {
+        this.id = id;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.publicado = false;
+        this.modulos = new ArrayList<>();
+        this.criadoEm = LocalDateTime.now();
+    }
     public void adicionarModulo(Modulo mod) {
         modulos.add(mod);
     }

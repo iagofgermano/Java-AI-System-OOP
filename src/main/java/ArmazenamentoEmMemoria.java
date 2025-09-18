@@ -2,6 +2,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 import java.nio.file.*;
+import java.util.stream.Collectors;
 
 public class ArmazenamentoEmMemoria {
 
@@ -11,6 +12,8 @@ public class ArmazenamentoEmMemoria {
     private final Map<UUID, Quiz> quizzes;
     private final Map<UUID, Modulo> modulos;
     private final Map<UUID, Aula> aulas;
+    private final Map<UUID, Admin> admins;
+    public Map<UUID, Inscricao> inscricoes = new HashMap<>();
 
     // Diretórios para persistência
     private final Path diretorioDados;
@@ -21,6 +24,7 @@ public class ArmazenamentoEmMemoria {
         this.quizzes = new ConcurrentHashMap<>();
         this.modulos = new ConcurrentHashMap<>();
         this.aulas = new ConcurrentHashMap<>();
+        this.admins = new ConcurrentHashMap<>();
         this.diretorioDados = Paths.get("dados");
         criarDiretoriosSeNaoExistir();
     }
@@ -31,6 +35,7 @@ public class ArmazenamentoEmMemoria {
         this.quizzes = new ConcurrentHashMap<>();
         this.modulos = new ConcurrentHashMap<>();
         this.aulas = new ConcurrentHashMap<>();
+        this.admins = new ConcurrentHashMap<>();
         this.diretorioDados = diretorioDados;
         criarDiretoriosSeNaoExistir();
     }
@@ -116,6 +121,15 @@ public class ArmazenamentoEmMemoria {
         persistirAlunos();
     }
 
+    public void salvarAdmin(Admin admin) {
+        if (admin == null) {
+            throw new IllegalArgumentException("Admin não pode ser null");
+        }
+        admins.put(admin.getId(), admin);
+
+        persistirAdmins();
+    }
+
     public void removerAluno(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do aluno não pode ser null");
@@ -124,8 +138,12 @@ public class ArmazenamentoEmMemoria {
         persistirAlunos();
     }
 
-    public List<Aluno> listarAlunos() {
-        return new ArrayList<>(alunos.values());
+    public Map<UUID, Aluno> getAlunos() {
+        return alunos;
+    }
+
+    public Map<UUID, Admin> getAdmins() {
+        return admins;
     }
 
     // =========================
@@ -164,8 +182,8 @@ public class ArmazenamentoEmMemoria {
                             for (BlocoConteudo bloco : aula.getBlocos()) {
                                 if (bloco instanceof BlocoTexto) {
                                     BlocoTexto bt = (BlocoTexto) bloco;
-                                    writer.write(String.format("BLOCO_TEXTO;%d;%s%n",
-                                            bt.getOrdem(), bt.getTexto()));
+                                    writer.write(String.format("BLOCO_TEXTO;%d;%s;%s%n",
+                                            bt.getOrdem(), bt.getTexto(), aula.getId().toString()));
                                 } else if (bloco instanceof BlocoCodigo) {
                                     BlocoCodigo bc = (BlocoCodigo) bloco;
                                     writer.write(String.format("BLOCO_CODIGO;%d;%s;%s%n",
@@ -230,5 +248,34 @@ public class ArmazenamentoEmMemoria {
         } catch (IOException e) {
             System.err.println("Erro ao persistir alunos: " + e.getMessage());
         }
+    }
+
+    public void persistirAdmins() {
+        try {
+            Path arquivoAlunos = diretorioDados.resolve("admins.txt");
+            try (BufferedWriter writer = Files.newBufferedWriter(arquivoAlunos,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
+                for (Aluno aluno : alunos.values()) {
+                    writer.write(String.format("ADMIN;%s;%s;%s;%s%n",
+                            aluno.getId().toString(),
+                            aluno.getNome(),
+                            aluno.getEmail(),
+                            aluno.getSenhaHash()));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao persistir alunos: " + e.getMessage());
+        }
+    }
+
+    public void salvarInscricao(Inscricao i) {
+        inscricoes.put(i.getId(), i);
+    }
+
+    public List<Inscricao> obterInscricoesPorAluno(Aluno aluno) {
+        return inscricoes.values().stream()
+                .filter(i -> i.getAluno().getId().equals(aluno.getId()))
+                .collect(Collectors.toList());
     }
 }

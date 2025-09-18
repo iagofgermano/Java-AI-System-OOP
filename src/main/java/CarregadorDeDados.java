@@ -11,7 +11,7 @@ public class CarregadorDeDados {
     private final Map<UUID, Insignia> insignias = new HashMap<>();
     private final String diretorioBase = "dados";
     public CarregadorDeDados() {
-        // Construtor padrão
+
     }
 
     public void carregarTodosDados() throws IOException {
@@ -91,8 +91,7 @@ public class CarregadorDeDados {
                 String titulo = partes[1];
                 String descricao = partes[2];
 
-                Curso curso = new Curso(titulo, descricao);
-                // Se precisar setar o ID manualmente, faça isso aqui (via reflexão ou setter)
+                Curso curso = new Curso(id, titulo, descricao);
                 cursos.add(curso);
             }
         }
@@ -115,7 +114,7 @@ public class CarregadorDeDados {
                 int ordem = Integer.parseInt(partes[2]);
                 String titulo = partes[3];
 
-                Modulo modulo = new Modulo(ordem, titulo);
+                Modulo modulo = new Modulo(id, ordem, titulo);
                 modulos.put(id, modulo);
                 listaModulos.add(modulo);
 
@@ -144,7 +143,7 @@ public class CarregadorDeDados {
                 int ordem = Integer.parseInt(partes[2]);
                 int duracaoMin = Integer.parseInt(partes[3]);
 
-                Aula aula = new Aula(ordem, duracaoMin);
+                Aula aula = new Aula(id, ordem, duracaoMin);
                 aulas.put(id, aula);
                 listaAulas.add(aula);
 
@@ -167,11 +166,10 @@ public class CarregadorDeDados {
             if (linha.isEmpty()) continue;
 
             String[] partes = linha.split(";", 4); // Limita para não dividir o texto
-            if (partes.length >= 4) {
-                UUID id = UUID.fromString(partes[0]);
-                UUID aulaId = UUID.fromString(partes[1]);
-                int ordem = Integer.parseInt(partes[2]);
-                String texto = partes[3];
+            if (partes.length >= 3) {
+                int ordem = Integer.parseInt(partes[1]);
+                String texto = partes[2];
+                UUID aulaId = UUID.fromString(partes[3]);
 
                 BlocoTexto bloco = new BlocoTexto(ordem, texto);
                 listaBlocos.add(bloco);

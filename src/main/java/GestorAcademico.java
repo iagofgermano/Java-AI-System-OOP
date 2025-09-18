@@ -21,11 +21,8 @@ public class GestorAcademico {
         if (store.obterCurso(curso.getId()) == null) {
             throw new IllegalArgumentException("Curso não registrado no sistema.");
         }
-
-        // Cria a inscrição
         Inscricao inscricao = new Inscricao(aluno, curso);
-
-        // Retorna a inscrição criada
+        store.salvarInscricao(inscricao); // <-- SALVAR NO STORAGE
         return inscricao;
     }
 
