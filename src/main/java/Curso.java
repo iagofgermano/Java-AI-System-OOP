@@ -19,11 +19,11 @@ public class Curso {
         this.criadoEm = LocalDateTime.now();
     }
 
-    public Curso(UUID id, String titulo, String descricao) {
+    public Curso(UUID id, String titulo, String descricao, boolean publicado) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
-        this.publicado = false;
+        this.publicado = publicado;
         this.modulos = new ArrayList<>();
         this.criadoEm = LocalDateTime.now();
     }

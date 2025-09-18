@@ -13,15 +13,13 @@ public class CarregadorDeDados {
     private final Map<UUID, Insignia> insignias = new HashMap<>();
     private final Map<UUID, InsigniaDoUsuario> insigniasConcedidas = new HashMap<>();
     private final Map<UUID, Admin> admins = new HashMap<>();
+    private final Map<UUID, Inscricao> inscricoes = new HashMap<>();
     private final String diretorioBase = "dados";
     public CarregadorDeDados() {
 
     }
 
     public void carregarTodosDados() throws IOException {
-        System.out.println("Carregando dados do diretório: " + diretorioBase);
-
-        // Carregar em ordem de dependência
         carregarInsignias(Paths.get(diretorioBase, "insignias.txt"));
         carregarInsigniasConcedidas(Paths.get(diretorioBase, "insignias_concedidas.txt"));
         carregarAlunos(Paths.get(diretorioBase, "alunos.txt"));
@@ -32,16 +30,7 @@ public class CarregadorDeDados {
         carregarBlocosTexto(Paths.get(diretorioBase, "blocos.txt"));
         carregarQuizzes(Paths.get(diretorioBase, "quizzes.txt"));
         carregarQuestoes(Paths.get(diretorioBase, "questoes.txt"));
-
-        System.out.println("Dados carregados com sucesso!");
-        System.out.println("- Cursos: " + cursos.size());
-        System.out.println("- Módulos: " + modulos.size());
-        System.out.println("- Aulas: " + aulas.size());
-        System.out.println("- Quizzes: " + quizzes.size());
-        System.out.println("- Alunos: " + alunos.size());
-        System.out.println("- Insignias: " + insignias.size());
-        System.out.println("- Concessões: " + insigniasConcedidas.size());
-        System.out.println("- Admins: " + admins.size());
+        carregarInscricoes(Paths.get(diretorioBase, "inscricoes.txt"));
     }
 
     public void carregarAlunos(Path arquivo) throws IOException {
@@ -78,18 +67,6 @@ public class CarregadorDeDados {
         }
     }
 
-    public void addAluno(UUID id, Aluno aluno) {
-        alunos.put(id, aluno);
-    }
-
-    public void addAdmin(UUID id, Admin admin) {
-        admins.put(id, admin);
-    }
-
-    public void addInsignia(Insignia insignia) {
-        insignias.put(insignia.getId(), insignia);
-    }
-
     /**
      * Carrega uma lista de cursos a partir de um arquivo .txt.
      * Formato esperado: UUID;titulo;descricao
@@ -106,18 +83,43 @@ public class CarregadorDeDados {
                     String descricao = partes[3];
                     boolean publicado = Boolean.parseBoolean(partes[4]);
 
-                    Curso curso = new Curso(id, titulo, descricao);
-                    // Se tiver setter para publicado:
-                    try {
-                        curso.getClass().getMethod("setPublicado", boolean.class).invoke(curso, publicado);
-                    } catch (Exception e) {
-                        System.err.println("Não foi possível definir publicado para curso " + id);
-                    }
+                    Curso curso = new Curso(id, titulo, descricao, publicado);
                     cursos.put(id, curso);
                 }
             }
         }
     }
+
+
+    public void carregarInscricoes(Path arquivo) throws IOException {
+        List<String> linhas = Files.readAllLines(arquivo);
+
+        for (String linha : linhas) {
+            if (linha.startsWith("INSCRICAO;")) {
+                String[] partes = linha.split(";"); // limita para evitar split no texto
+                if (partes.length == 5) {
+                    UUID id = UUID.fromString(partes[1]);
+                    UUID alunoId = UUID.fromString(partes[2]);
+                    UUID cursoId = UUID.fromString(partes[3]);
+                    StatusInscricao status = StatusInscricao.valueOf(partes[4]);
+
+                    Aluno aluno = alunos.get(alunoId);
+                    Curso curso = cursos.get(cursoId);
+
+                    Inscricao inscricao = new Inscricao(id, aluno, curso, status);
+                    inscricoes.put(id, inscricao);
+                }
+            }
+        }
+    }
+
+    public List<Inscricao> obterInscricoesPorAluno(Aluno aluno) {
+        return inscricoes.values().stream()
+                .filter(i -> i.getAluno().getId().equals(aluno.getId()))
+                .filter(i -> i.getCurso().isPublicado())
+                .collect(Collectors.toList());
+    }
+
 
     public void carregarModulos(Path arquivo) throws IOException {
         List<String> linhas = Files.readAllLines(arquivo);
@@ -277,7 +279,7 @@ public class CarregadorDeDados {
                 if (partes.length == 5) {
                     UUID quizId = UUID.fromString(partes[1]);
                     String enunciado = partes[2].replace("\\;", ";");
-                    double peso = Double.parseDouble(partes[3]);
+                    double peso = Double.parseDouble(partes[3].replace(",", "."));
                     boolean correto = Boolean.parseBoolean(partes[4]);
 
                     QVerdadeiroFalso questao = new QVerdadeiroFalso(enunciado, peso, correto);
@@ -289,47 +291,6 @@ public class CarregadorDeDados {
                 }
             }
         }
-    }
-
-    private Questao criarQuestaoUmaEscolha(String enunciado, double peso, String dadosExtras) {
-        String[] partes = dadosExtras.split("\\|");
-        QUmaEscolha questao = new QUmaEscolha(enunciado, peso);
-
-        // Última parte é o índice correto
-        int indiceCorreto = Integer.parseInt(partes[partes.length - 1]);
-
-        // Adicionar opções
-        for (int i = 0; i < partes.length - 1; i++) {
-            boolean correta = (i == indiceCorreto);
-            questao.adicionarOpcao(partes[i], correta);
-        }
-
-        return questao;
-    }
-
-    private Questao criarQuestaoMultiplaSelecao(String enunciado, double peso, String dadosExtras) {
-        String[] partes = dadosExtras.split("\\|");
-        QMultiplaSelecao questao = new QMultiplaSelecao(enunciado, peso);
-
-        // Última parte são os índices corretos
-        String[] indicesCorretosStr = partes[partes.length - 1].split(",");
-        Set<Integer> indicesCorretos = new HashSet<>();
-        for (String indiceStr : indicesCorretosStr) {
-            indicesCorretos.add(Integer.parseInt(indiceStr.trim()));
-        }
-
-        // Adicionar opções
-        for (int i = 0; i < partes.length - 1; i++) {
-            boolean correta = indicesCorretos.contains(i);
-            questao.adicionarOpcao(partes[i], correta);
-        }
-
-        return questao;
-    }
-
-    private Questao criarQuestaoVerdadeiroFalso(String enunciado, double peso, String dadosExtras) {
-        boolean respostaCorreta = Boolean.parseBoolean(dadosExtras);
-        return new QVerdadeiroFalso(enunciado, peso, respostaCorreta);
     }
 
     public List<Insignia> carregarInsignias(Path arquivo) throws IOException {

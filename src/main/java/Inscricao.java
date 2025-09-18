@@ -15,6 +15,13 @@ public class Inscricao {
         this.status = StatusInscricao.ACTIVE; // Status inicial padrão
     }
 
+    public Inscricao(UUID id, Aluno aluno, Curso curso, StatusInscricao status) {
+        this.id = id;
+        this.aluno = aluno;
+        this.curso = curso;
+        this.status = status; // Status inicial padrão
+    }
+
     // Métodos
 
     /**

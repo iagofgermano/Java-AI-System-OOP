@@ -79,6 +79,12 @@ public class ArmazenamentoEmMemoria {
         persistirCursos();
     }
 
+    public void salvarInscricao(Inscricao i) {
+        inscricoes.put(i.getId(), i);
+        persistirInscricoes();
+
+    }
+
     public void removerCurso(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do curso não pode ser null");
@@ -133,67 +139,12 @@ public class ArmazenamentoEmMemoria {
         persistirAdmins();
     }
 
-    public Insignia obterInsignia(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID da insígnia não pode ser null");
-        }
-        return insignias.get(id);
-    }
-
     public void salvarInsignia(Insignia insignia) {
         if (insignia == null) {
             throw new IllegalArgumentException("Insígnia não pode ser null");
         }
         insignias.put(insignia.getId(), insignia);
         persistirInsignias();
-    }
-
-    public void removerInsignia(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID da insígnia não pode ser null");
-        }
-        insignias.remove(id);
-        persistirInsignias();
-    }
-
-    public InsigniaDoUsuario obterInsigniaConcedida(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID da concessão não pode ser null");
-        }
-        return insigniasConcedidas.get(id);
-    }
-
-    public void salvarInsigniaConcedida(InsigniaDoUsuario concessao) {
-        if (concessao == null) {
-            throw new IllegalArgumentException("Concessão não pode ser null");
-        }
-        insigniasConcedidas.put(concessao.getId(), concessao);
-        persistirInsigniasConcedidas();
-    }
-
-    public void removerInsigniaConcedida(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID da concessão não pode ser null");
-        }
-        insigniasConcedidas.remove(id);
-        persistirInsigniasConcedidas();
-    }
-
-    public List<InsigniaDoUsuario> listarInsigniasConcedidasPorAluno(Aluno aluno) {
-        if (aluno == null) {
-            throw new IllegalArgumentException("Aluno não pode ser null");
-        }
-        return insigniasConcedidas.values().stream()
-                .filter(i -> i.getAluno().getId().equals(aluno.getId()))
-                .collect(Collectors.toList());
-    }
-
-    public void removerAluno(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID do aluno não pode ser null");
-        }
-        alunos.remove(id);
-        persistirAlunos();
     }
 
     public Map<UUID, Insignia> getInsignias() {
@@ -426,13 +377,22 @@ public class ArmazenamentoEmMemoria {
         }
     }
 
-    public void salvarInscricao(Inscricao i) {
-        inscricoes.put(i.getId(), i);
-    }
+    public void persistirInscricoes() {
+        try {
+            Path arquivoInscricoes = diretorioDados.resolve("inscricoes.txt");
+            try (BufferedWriter writer = Files.newBufferedWriter(arquivoInscricoes,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
-    public List<Inscricao> obterInscricoesPorAluno(Aluno aluno) {
-        return inscricoes.values().stream()
-                .filter(i -> i.getAluno().getId().equals(aluno.getId()))
-                .collect(Collectors.toList());
+                for (Inscricao inscricao : inscricoes.values()) {
+                    writer.append(String.format("INSCRICAO;%s;%s;%s;%s%n",
+                            inscricao.getId().toString(),
+                            inscricao.getAluno().getId().toString(),
+                            inscricao.getCurso().getId().toString(),
+                            inscricao.getStatus().toString()));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao persistir inscrições: " + e.getMessage());
+        }
     }
 }

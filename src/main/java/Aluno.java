@@ -3,17 +3,20 @@ import java.util.*;
 public class Aluno extends Usuario {
     public final Map<UUID, Progresso> progressoPorAula;
     public final List<InsigniaDoUsuario> insignias;
+    public final List<Inscricao> inscricoes;
 
     public Aluno(String nome, String email, String senha) {
         super(nome, email, senha);
         this.progressoPorAula = new HashMap<>();
         this.insignias = new ArrayList<>();
+        this.inscricoes = new ArrayList<>();
     }
 
     public Aluno(UUID id, String nome, String email, String senha) {
         super(id, nome, email, senha);
         this.progressoPorAula = new HashMap<>();
         this.insignias = new ArrayList<>();
+        this.inscricoes = new ArrayList<>();
     }
     public void iniciarTrilha(Curso curso) {
         // Verifica se o curso está publicado antes de permitir a inscrição
@@ -72,5 +75,11 @@ public class Aluno extends Usuario {
 
     public List<InsigniaDoUsuario> getInsignias() {
         return new ArrayList<>(insignias); // Retorna cópia defensiva
+    }
+
+    public Map<UUID, Progresso> getProgressoPorAula() { return new HashMap<>(this.progressoPorAula); }
+
+    public List<Inscricao> getInscricoes() {
+        return inscricoes;
     }
 }

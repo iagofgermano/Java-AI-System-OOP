@@ -78,9 +78,9 @@ public class Main {
 
     private static void loginAdmin() {
         System.out.print("Email: ");
-        String email = scanner.next();
+        String email = scanner.nextLine();
         System.out.print("Senha: ");
-        String senha = scanner.next();
+        String senha = scanner.nextLine();
 
         Optional<Admin> adminOpt = carregador.getAdmins().values().stream()
                 .filter(a -> a.email.equals(email))
@@ -105,7 +105,11 @@ public class Main {
 
         Aluno aluno = new Aluno(nome, email, senha);
         armazenamento.salvarAluno(aluno);
-        carregador.addAluno(aluno.getId(), aluno);
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar todos os dados.");
+        }
         System.out.println("✅ Aluno registrado com sucesso!");
     }
 
@@ -120,7 +124,11 @@ public class Main {
         Admin admin = new Admin(nome, email, senha);
 
         armazenamento.salvarAdmin(admin);
-        carregador.addAdmin(admin.getId(), admin);
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar todos os dados.");
+        }
         System.out.println("✅ Admin registrado com sucesso!");
     }
 
@@ -181,7 +189,7 @@ public class Main {
     }
 
     private static void verInscricoes(Aluno aluno) {
-        List<Inscricao> inscricoes = armazenamento.obterInscricoesPorAluno(aluno);
+        List<Inscricao> inscricoes = carregador.obterInscricoesPorAluno(aluno);
 
         if (inscricoes.isEmpty()) {
             System.out.println("Você não está inscrito em nenhum curso.");
@@ -196,12 +204,8 @@ public class Main {
     }
 
     private static void iniciarTrilha(Aluno aluno) {
-        // Simulando acesso ao campo privado (em produção, use métodos getters)
         try {
-            java.lang.reflect.Field field = Aluno.class.getDeclaredField("inscricoes");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            List<Inscricao> inscricoes = (List<Inscricao>) field.get(aluno);
+            List<Inscricao> inscricoes = carregador.obterInscricoesPorAluno(aluno);
 
             if (inscricoes.isEmpty()) {
                 System.out.println("Você não está inscrito em nenhum curso. Inscreva-se primeiro!");
@@ -483,6 +487,7 @@ public class Main {
                 System.out.println("✅ Curso despublicado.");
             } else {
                 admin.publicarCurso(curso);
+                armazenamento.persistirCursos();
                 System.out.println("✅ Curso publicado.");
             }
         }
@@ -495,7 +500,11 @@ public class Main {
         String descricao = scanner.nextLine();
         Insignia insignia = new Insignia(nome, descricao);
         armazenamento.salvarInsignia(insignia);
-        carregador.addInsignia(insignia);
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar dados.");
+        }
 
         System.out.println("Insignia criada com sucesso.");
     }
