@@ -1,0 +1,3 @@
+ALUNO;40aaf343-f6e0-4c01-8c57-fa4e2e20a8c9;Daniel;daniel@gmail.com;48690
+ALUNO;4b0e3f74-4bc3-4e9f-b9e7-52812d06349f;Igor;igor@gmail.com;48690
+ALUNO;ae30e431-67be-4639-9bda-beb80a12cec8;Iago;iago@gmail.com;48690

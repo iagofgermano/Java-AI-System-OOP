@@ -105,6 +105,7 @@ public class Main {
 
         Aluno aluno = new Aluno(nome, email, senha);
         armazenamento.salvarAluno(aluno);
+        carregador.addAluno(aluno.getId(), aluno);
         System.out.println("✅ Aluno registrado com sucesso!");
     }
 
@@ -119,6 +120,7 @@ public class Main {
         Admin admin = new Admin(nome, email, senha);
 
         armazenamento.salvarAdmin(admin);
+        carregador.addAdmin(admin.getId(), admin);
         System.out.println("✅ Admin registrado com sucesso!");
     }
 
@@ -454,8 +456,12 @@ public class Main {
 
     private static void listarCursosAdmin() {
         List<Curso> cursos = armazenamento.listarCursos();
-        if (cursos.isEmpty()) {
-            throw new RuntimeException("Nenhum curso cadastrado.");
+        try {
+            if (cursos.isEmpty()) {
+                throw new RuntimeException("Nenhum curso cadastrado.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         for (int i = 0; i < cursos.size(); i++) {
@@ -489,6 +495,8 @@ public class Main {
         String descricao = scanner.nextLine();
         Insignia insignia = new Insignia(nome, descricao);
         armazenamento.salvarInsignia(insignia);
+        carregador.addInsignia(insignia);
+
         System.out.println("Insignia criada com sucesso.");
     }
 
@@ -592,6 +600,11 @@ public class Main {
         }
 
         armazenamento.salvarCurso(curso);
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar o curso.");
+        }
         System.out.println("\n✅ Curso '" + curso.getTitulo() + "' criado como rascunho. Publique quando estiver pronto.");
     }
 

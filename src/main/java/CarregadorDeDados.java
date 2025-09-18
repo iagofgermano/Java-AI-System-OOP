@@ -78,6 +78,18 @@ public class CarregadorDeDados {
         }
     }
 
+    public void addAluno(UUID id, Aluno aluno) {
+        alunos.put(id, aluno);
+    }
+
+    public void addAdmin(UUID id, Admin admin) {
+        admins.put(id, admin);
+    }
+
+    public void addInsignia(Insignia insignia) {
+        insignias.put(insignia.getId(), insignia);
+    }
+
     /**
      * Carrega uma lista de cursos a partir de um arquivo .txt.
      * Formato esperado: UUID;titulo;descricao

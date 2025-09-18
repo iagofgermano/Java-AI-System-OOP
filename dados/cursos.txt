@@ -1,0 +1,1 @@
+CURSO;91ef17da-d723-4a18-b0bf-d8bbd6094b0f;Ensino de IA;Curso para ensinar IA;false
