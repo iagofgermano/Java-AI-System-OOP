@@ -1,2 +1,0 @@
-ALUNO;13fe7efe-118d-4698-b71a-c35b430cebe8;Igor;igor@gmail;48690
-ALUNO;4f224593-92bb-4fdc-a1c1-a8c9cc365951;Daniel;daniel@bol;48690

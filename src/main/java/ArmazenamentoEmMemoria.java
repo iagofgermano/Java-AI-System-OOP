@@ -14,6 +14,8 @@ public class ArmazenamentoEmMemoria {
     private final Map<UUID, Aula> aulas;
     private final Map<UUID, Admin> admins;
     private final Map<UUID, Inscricao> inscricoes;
+    private final Map<UUID, Insignia> insignias;           // Catálogo de insígnias
+    private final Map<UUID, InsigniaDoUsuario> insigniasConcedidas; // Concessões a alunos
     private final CarregadorDeDados carregador;
 
 
@@ -29,6 +31,8 @@ public class ArmazenamentoEmMemoria {
         this.aulas = new ConcurrentHashMap<>();
         this.admins = new ConcurrentHashMap<>();
         this.inscricoes = new ConcurrentHashMap<>();
+        this.insignias = new ConcurrentHashMap<>();           // <-- novo
+        this.insigniasConcedidas = new ConcurrentHashMap<>(); // <-- novo
         this.carregador = new CarregadorDeDados();
         try {
             carregador.carregarTodosDados();
@@ -129,12 +133,71 @@ public class ArmazenamentoEmMemoria {
         persistirAdmins();
     }
 
+    public Insignia obterInsignia(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da insígnia não pode ser null");
+        }
+        return insignias.get(id);
+    }
+
+    public void salvarInsignia(Insignia insignia) {
+        if (insignia == null) {
+            throw new IllegalArgumentException("Insígnia não pode ser null");
+        }
+        insignias.put(insignia.getId(), insignia);
+        persistirInsignias();
+    }
+
+    public void removerInsignia(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da insígnia não pode ser null");
+        }
+        insignias.remove(id);
+        persistirInsignias();
+    }
+
+    public InsigniaDoUsuario obterInsigniaConcedida(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da concessão não pode ser null");
+        }
+        return insigniasConcedidas.get(id);
+    }
+
+    public void salvarInsigniaConcedida(InsigniaDoUsuario concessao) {
+        if (concessao == null) {
+            throw new IllegalArgumentException("Concessão não pode ser null");
+        }
+        insigniasConcedidas.put(concessao.getId(), concessao);
+        persistirInsigniasConcedidas();
+    }
+
+    public void removerInsigniaConcedida(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da concessão não pode ser null");
+        }
+        insigniasConcedidas.remove(id);
+        persistirInsigniasConcedidas();
+    }
+
+    public List<InsigniaDoUsuario> listarInsigniasConcedidasPorAluno(Aluno aluno) {
+        if (aluno == null) {
+            throw new IllegalArgumentException("Aluno não pode ser null");
+        }
+        return insigniasConcedidas.values().stream()
+                .filter(i -> i.getAluno().getId().equals(aluno.getId()))
+                .collect(Collectors.toList());
+    }
+
     public void removerAluno(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do aluno não pode ser null");
         }
         alunos.remove(id);
         persistirAlunos();
+    }
+
+    public Map<UUID, Insignia> getInsignias() {
+        return insignias;
     }
 
     public Map<UUID, Aluno> getAlunos() {
@@ -163,6 +226,10 @@ public class ArmazenamentoEmMemoria {
 
     public Map<UUID, Inscricao> getInscricoes() {
         return inscricoes;
+    }
+
+    public Map<UUID, InsigniaDoUsuario> getInsigniasConcedidas() {
+        return insigniasConcedidas;
     }
 
     // =========================
@@ -319,6 +386,43 @@ public class ArmazenamentoEmMemoria {
             }
         } catch (IOException e) {
             System.err.println("Erro ao persistir admins: " + e.getMessage());
+        }
+    }
+
+    public void persistirInsignias() {
+        try {
+            Path arquivoInsignias = diretorioDados.resolve("insignias.txt");
+            try (BufferedWriter writer = Files.newBufferedWriter(arquivoInsignias,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
+                for (Insignia insignia : insignias.values()) {
+                    writer.append(String.format("INSIGNIA;%s;%s;%s%n",
+                            insignia.getId().toString(),
+                            insignia.getNome().replace(";", "\\;"),
+                            insignia.getDescricao().replace(";", "\\;")));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao persistir insígnias: " + e.getMessage());
+        }
+    }
+
+    public void persistirInsigniasConcedidas() {
+        try {
+            Path arquivoConcessoes = diretorioDados.resolve("insignias_usuarios.txt");
+            try (BufferedWriter writer = Files.newBufferedWriter(arquivoConcessoes,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
+                for (InsigniaDoUsuario concessao : insigniasConcedidas.values()) {
+                    writer.append(String.format("CONCESSAO;%s;%s;%s;%s%n",
+                            concessao.getId().toString(),
+                            concessao.getAluno().getId().toString(),
+                            concessao.getInsignia().getId().toString(),
+                            concessao.getData().toString()));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao persistir concessões de insígnias: " + e.getMessage());
         }
     }
 

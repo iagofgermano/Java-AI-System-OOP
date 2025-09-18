@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ public class CarregadorDeDados {
     private final Map<UUID, Quiz> quizzes = new HashMap<>();
     private final Map<UUID, Aluno> alunos = new HashMap<>();
     private final Map<UUID, Insignia> insignias = new HashMap<>();
+    private final Map<UUID, InsigniaDoUsuario> insigniasConcedidas = new HashMap<>();
     private final Map<UUID, Admin> admins = new HashMap<>();
     private final String diretorioBase = "dados";
     public CarregadorDeDados() {
@@ -21,6 +23,7 @@ public class CarregadorDeDados {
 
         // Carregar em ordem de dependência
         carregarInsignias(Paths.get(diretorioBase, "insignias.txt"));
+        carregarInsigniasConcedidas(Paths.get(diretorioBase, "insignias_concedidas.txt"));
         carregarAlunos(Paths.get(diretorioBase, "alunos.txt"));
         carregarAdmins(Paths.get(diretorioBase, "admins.txt"));
         carregarCursos(Paths.get(diretorioBase, "cursos.txt"));
@@ -37,6 +40,7 @@ public class CarregadorDeDados {
         System.out.println("- Quizzes: " + quizzes.size());
         System.out.println("- Alunos: " + alunos.size());
         System.out.println("- Insignias: " + insignias.size());
+        System.out.println("- Concessões: " + insigniasConcedidas.size());
         System.out.println("- Admins: " + admins.size());
     }
 
@@ -338,6 +342,29 @@ public class CarregadorDeDados {
         return listaInsignias;
     }
 
+    public void carregarInsigniasConcedidas(Path arquivo) throws IOException {
+        List<String> linhas = Files.readAllLines(arquivo);
+        for (String linha : linhas) {
+            if (linha.startsWith("CONCESSAO;")) {
+                String[] partes = linha.split(";", 5);
+                if (partes.length == 5) {
+                    UUID id = UUID.fromString(partes[1]);
+                    UUID alunoId = UUID.fromString(partes[2]);
+                    UUID insigniaId = UUID.fromString(partes[3]);
+                    LocalDateTime data = LocalDateTime.parse(partes[4]);
+
+                    Aluno aluno = alunos.get(alunoId);
+                    Insignia insignia = insignias.get(insigniaId);
+
+                    if (aluno != null && insignia != null) {
+                        InsigniaDoUsuario concessao = new InsigniaDoUsuario(id, aluno, insignia, data);
+                        insigniasConcedidas.put(id, concessao);
+                    }
+                }
+            }
+        }
+    }
+
     // Getters para acesso aos dados carregados
     public Map<UUID, Curso> getCursos() { return cursos; }
     public Map<UUID, Modulo> getModulos() { return modulos; }
@@ -345,5 +372,6 @@ public class CarregadorDeDados {
     public Map<UUID, Quiz> getQuizzes() { return quizzes; }
     public Map<UUID, Aluno> getAlunos() { return alunos; }
     public Map<UUID, Insignia> getInsignias() { return insignias; }
+    public Map<UUID, InsigniaDoUsuario> getInsigniasConcedidas() {return insigniasConcedidas;}
     public Map<UUID, Admin> getAdmins() {return admins;}
 }

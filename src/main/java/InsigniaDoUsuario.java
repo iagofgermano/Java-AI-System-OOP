@@ -15,6 +15,13 @@ public class InsigniaDoUsuario {
         this.data = data;
     }
 
+    public InsigniaDoUsuario(UUID id, Aluno aluno, Insignia insignia, LocalDateTime data) {
+        this.id = id;
+        this.aluno = aluno;
+        this.insignia = insignia;
+        this.data = data;
+    }
+
     // Getters
     public UUID getId() {
         return id;

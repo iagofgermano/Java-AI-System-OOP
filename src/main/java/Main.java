@@ -17,6 +17,8 @@ public class Main {
             armazenamento.getAdmins().putAll(carregador.getAdmins());
             armazenamento.getModulos().putAll(carregador.getModulos());
             armazenamento.getAulas().putAll(carregador.getAulas());
+            armazenamento.getInsignias().putAll(carregador.getInsignias());
+            armazenamento.getInsigniasConcedidas().putAll(carregador.getInsigniasConcedidas());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,12 +78,12 @@ public class Main {
 
     private static void loginAdmin() {
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.next();
         System.out.print("Senha: ");
-        String senha = scanner.nextLine();
+        String senha = scanner.next();
 
         Optional<Admin> adminOpt = carregador.getAdmins().values().stream()
-                .filter(a -> a instanceof Admin && a.email.equals(email))
+                .filter(a -> a.email.equals(email))
                 .map(a -> (Admin) a)
                 .findFirst();
 
@@ -431,7 +433,8 @@ public class Main {
         System.out.println("1. Listar Cursos");
         System.out.println("2. Publicar/Despublicar Curso");
         System.out.println("3. Criar Novo Curso");
-        System.out.println("4. Sair da Conta");
+        System.out.println("4. Criar Insignia");
+        System.out.println("5. Sair da Conta");
         System.out.print("Escolha: ");
 
         int opcao = lerInteiro();
@@ -439,7 +442,8 @@ public class Main {
             case 1 -> listarCursosAdmin();
             case 2 -> publicarDespublicar(admin);
             case 3 -> criarCurso(admin);
-            case 4 -> {
+            case 4 -> criarInsignia(admin);
+            case 5 -> {
                 admin.sair();
                 usuarioLogado = null;
                 System.out.println("✅ Logout realizado.");
@@ -478,6 +482,16 @@ public class Main {
         }
     }
 
+    private static void criarInsignia(Admin admin) {
+        System.out.print("Qual será o nome da Insígnia?");
+        String nome = scanner.nextLine();
+        System.out.print("Qual é o objetivo da Insignia?");
+        String descricao = scanner.nextLine();
+        Insignia insignia = new Insignia(nome, descricao);
+        armazenamento.salvarInsignia(insignia);
+        System.out.println("Insignia criada com sucesso.");
+    }
+
     private static void criarCurso(Admin admin) {
         System.out.print("Título do curso: ");
         String titulo = scanner.nextLine();
@@ -486,24 +500,184 @@ public class Main {
 
         Curso curso = new Curso(titulo, descricao);
 
-        Modulo mod1 = new Modulo(1, "Introdução");
-        Aula aula1 = new Aula(1, 10);
-        aula1.adicionarBloco("Bem-vindo ao curso!");
-        aula1.adicionarBloco(new BlocoTexto(1, "Este é um bloco de texto de exemplo."));
-        aula1.adicionarBloco(new BlocoCodigo(2, "java", "public class OlaMundo { }"));
-        mod1.adicionarAula(aula1);
+        // Adicionar módulos
+        int numModulo = 1;
+        while (true) {
+            System.out.println("\n--- Criando Módulo " + numModulo + " ---");
+            System.out.print("Título do módulo (ou 'fim' para encerrar): ");
+            String tituloModulo = scanner.nextLine();
+            if (tituloModulo.equalsIgnoreCase("fim")) break;
 
-        Quiz quiz = new Quiz(70);
-        QUmaEscolha q1 = new QUmaEscolha("Qual é a capital da França?", 1.0);
-        q1.adicionarOpcao("Londres", false);
-        q1.adicionarOpcao("Paris", true);
-        q1.adicionarOpcao("Berlim", false);
-        quiz.adicionarQuestao(q1);
-        aula1.definirQuiz(quiz);
+            Modulo modulo = new Modulo(numModulo, tituloModulo);
 
-        curso.adicionarModulo(mod1);
+            // Adicionar aulas
+            int numAula = 1;
+            while (true) {
+                System.out.println("\n--- Criando Aula " + numAula + " no Módulo " + numModulo + " ---");
+                System.out.print("Duração da aula (em minutos): ");
+                int duracao = lerInteiro();
+                if (duracao <= 0) {
+                    System.out.println("Duração inválida. Tente novamente.");
+                    continue;
+                }
+
+                Aula aula = new Aula(numAula, duracao);
+
+                // Adicionar blocos de conteúdo
+                int ordemBloco = 1;
+                while (true) {
+                    System.out.println("\nAdicionar bloco à Aula " + numAula + ":");
+                    System.out.println("1. Texto");
+                    System.out.println("2. Imagem");
+                    System.out.println("3. Código");
+                    System.out.println("0. Finalizar blocos");
+                    System.out.print("Escolha: ");
+                    int tipoBloco = lerInteiro();
+
+                    if (tipoBloco == 0) break;
+
+                    switch (tipoBloco) {
+                        case 1 -> {
+                            System.out.print("Conteúdo do texto: ");
+                            String texto = scanner.nextLine();
+                            aula.adicionarBloco(new BlocoTexto(ordemBloco, texto));
+                            ordemBloco++;
+                        }
+                        case 2 -> {
+                            System.out.print("Caminho da imagem: ");
+                            String caminho = scanner.nextLine();
+                            System.out.print("Descrição alternativa (alt text): ");
+                            String alt = scanner.nextLine();
+                            aula.adicionarBloco(new BlocoImagem(ordemBloco, caminho, alt));
+                            ordemBloco++;
+                        }
+                        case 3 -> {
+                            System.out.print("Linguagem (ex: java, python): ");
+                            String lang = scanner.nextLine();
+                            System.out.print("Código: ");
+                            StringBuilder codigo = new StringBuilder();
+                            System.out.println("Digite o código (digite 'FIM' em uma linha vazia para terminar):");
+                            String linha;
+                            while (!(linha = scanner.nextLine()).equals("FIM")) {
+                                codigo.append(linha).append("\n");
+                            }
+                            aula.adicionarBloco(new BlocoCodigo(ordemBloco, lang, codigo.toString().trim()));
+                            ordemBloco++;
+                        }
+                        default -> System.out.println("Tipo inválido.");
+                    }
+                }
+
+                // Adicionar quiz?
+                System.out.print("\nDeseja adicionar um quiz a esta aula? (s/n): ");
+                if (scanner.nextLine().equalsIgnoreCase("s")) {
+                    Quiz quiz = criarQuizInterativo();
+                    if (quiz != null) {
+                        aula.definirQuiz(quiz);
+                    }
+                }
+
+                modulo.adicionarAula(aula);
+                numAula++;
+
+                System.out.print("Deseja adicionar outra aula neste módulo? (s/n): ");
+                if (!scanner.nextLine().equalsIgnoreCase("s")) break;
+            }
+
+            curso.adicionarModulo(modulo);
+            numModulo++;
+
+            System.out.print("Deseja adicionar outro módulo? (s/n): ");
+            if (!scanner.nextLine().equalsIgnoreCase("s")) break;
+        }
+
         armazenamento.salvarCurso(curso);
-        System.out.println("✅ Curso criado como rascunho. Publique quando estiver pronto.");
+        System.out.println("\n✅ Curso '" + curso.getTitulo() + "' criado como rascunho. Publique quando estiver pronto.");
+    }
+
+    private static Quiz criarQuizInterativo() {
+        System.out.print("Nota mínima para aprovação (0-100): ");
+        int notaMinima = lerInteiro();
+        if (notaMinima < 0 || notaMinima > 100) {
+            System.out.println("Nota inválida. Usando 60 como padrão.");
+            notaMinima = 60;
+        }
+
+        Quiz quiz = new Quiz(notaMinima);
+
+        int numQuestao = 1;
+        while (true) {
+            System.out.println("\n--- Questão " + numQuestao + " ---");
+            System.out.print("Enunciado: ");
+            String enunciado = scanner.nextLine();
+            System.out.print("Peso (ex: 1.0): ");
+            double peso = Double.parseDouble(scanner.nextLine());
+
+            System.out.println("Tipo de questão:");
+            System.out.println("1. Uma Escolha");
+            System.out.println("2. Múltipla Seleção");
+            System.out.println("3. Verdadeiro/Falso");
+            System.out.print("Escolha: ");
+            int tipo = lerInteiro();
+
+            Questao questao = switch (tipo) {
+                case 1 -> criarQuestaoUmaEscolha(enunciado, peso);
+                case 2 -> criarQuestaoMultiplaSelecao(enunciado, peso);
+                case 3 -> criarQuestaoVerdadeiroFalso(enunciado, peso);
+                default -> {
+                    System.out.println("Tipo inválido. Pulando questão.");
+                    yield null;
+                }
+            };
+
+            if (questao != null) {
+                quiz.adicionarQuestao(questao);
+                numQuestao++;
+            }
+
+            System.out.print("Adicionar outra questão? (s/n): ");
+            if (!scanner.nextLine().equalsIgnoreCase("s")) break;
+        }
+
+        return quiz;
+    }
+
+    private static QUmaEscolha criarQuestaoUmaEscolha(String enunciado, double peso) {
+        QUmaEscolha q = new QUmaEscolha(enunciado, peso);
+        int opcaoNum = 1;
+        while (true) {
+            System.out.print("Opção " + opcaoNum + " (texto): ");
+            String texto = scanner.nextLine();
+            System.out.print("É correta? (s/n): ");
+            boolean correta = scanner.nextLine().equalsIgnoreCase("s");
+            q.adicionarOpcao(texto, correta);
+            opcaoNum++;
+            System.out.print("Adicionar outra opção? (s/n): ");
+            if (!scanner.nextLine().equalsIgnoreCase("s")) break;
+        }
+        return q;
+    }
+
+    private static QMultiplaSelecao criarQuestaoMultiplaSelecao(String enunciado, double peso) {
+        QMultiplaSelecao q = new QMultiplaSelecao(enunciado, peso);
+        int opcaoNum = 1;
+        while (true) {
+            System.out.print("Opção " + opcaoNum + " (texto): ");
+            String texto = scanner.nextLine();
+            System.out.print("É correta? (s/n): ");
+            boolean correta = scanner.nextLine().equalsIgnoreCase("s");
+            q.adicionarOpcao(texto, correta);
+            opcaoNum++;
+            System.out.print("Adicionar outra opção? (s/n): ");
+            if (!scanner.nextLine().equalsIgnoreCase("s")) break;
+        }
+        return q;
+    }
+
+    private static QVerdadeiroFalso criarQuestaoVerdadeiroFalso(String enunciado, double peso) {
+        System.out.print("A afirmação é verdadeira? (s/n): ");
+        boolean correta = scanner.nextLine().equalsIgnoreCase("s");
+        return new QVerdadeiroFalso(enunciado, peso, correta);
     }
 
     // ==================== UTILS ====================
@@ -518,16 +692,5 @@ public class Main {
     private static void pressioneEnter() {
         System.out.print("Pressione ENTER para continuar...");
         scanner.nextLine();
-    }
-
-    // ==================== DADOS EXEMPLO ====================
-    private static void inicializarDados() {
-        CarregadorDeDados carregador = new CarregadorDeDados();
-        try {
-            carregador.carregarTodosDados();
-        } catch (Exception e) {
-            System.err.println("Erro ao carregar os dados.");
-        }
-        System.out.println("✅ Dados carregados.");
     }
 }
