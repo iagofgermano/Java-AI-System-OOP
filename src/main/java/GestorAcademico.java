@@ -1,6 +1,8 @@
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 public class GestorAcademico {
 
     private ArmazenamentoEmMemoria store;
@@ -25,17 +27,30 @@ public class GestorAcademico {
         return inscricao;
     }
 
-    public Inscricao inscrever(UUID alunoId, UUID cursoId) {
-        Aluno aluno = store.obterAluno(alunoId);
-        Curso curso = store.obterCurso(cursoId);
+    public void verificarConclusaoCurso(Aluno aluno, Curso curso) {
+        List<Aula> todasAulas = curso.listarAulas();
+        boolean todasConcluidas = todasAulas.stream()
+                .allMatch(aula -> {
+                    Progresso p = consultarProgresso(aluno, aula);
+                    return p != null && p.getStatus() == StatusProgresso.COMPLETED;
+                });
 
-        if (aluno == null) {
-            throw new IllegalArgumentException("Aluno não encontrado com ID: " + alunoId);
+        if (todasConcluidas) {
+            // Verificar status da inscrição
+            List<Inscricao> inscricoes = store.getInscricoes().values().stream()
+                    .filter(i -> i.getCurso().getId().equals(curso.getId()))
+                    .collect(Collectors.toList());
+
+            if (!inscricoes.isEmpty()) {
+                Inscricao inscricao = inscricoes.getFirst();
+                if (inscricao.getStatus() != StatusInscricao.COMPLETED) {
+                    inscricao.marcarConcluida();
+                    for(Insignia insignia : curso.listarInsignias()) {// Atualiza status
+                        insignia.conceder(aluno, curso); // 🎖️ Concede insígnia!
+                    }
+                }
+            }
         }
-        if (curso == null) {
-            throw new IllegalArgumentException("Curso não encontrado com ID: " + cursoId);
-        }
-        return new Inscricao(aluno, curso);
     }
 
     public TentativaQuiz submeter(Aluno aluno, Quiz quiz, RespostaSheet respostas) {
