@@ -408,28 +408,45 @@ public class Main {
 
         try {
             SessaoPlayground sessao = new SessaoPlayground(aluno, tarefa);
-            sessao.iniciar();
             Parametros params = new Parametros();
 
             while (true) {
-                System.out.println("\nDigite parâmetros (chave=valor) ou 'executar' para rodar, 'sair' para sair:");
-                String input = scanner.nextLine();
-                if (input.equalsIgnoreCase("sair")) break;
-                if (input.equalsIgnoreCase("executar")) {
-                    Resultado resultado = sessao.executar(params);
-                    System.out.println("\n✅ Resultado:\n" + resultado.toString());
-                    params = new Parametros();
-                } else if (input.contains("=")) {
-                    String[] partes = input.split("=", 2);
-                    params.put(partes[0].trim(), partes[1].trim());
-                    System.out.println("✅ Parâmetro adicionado.");
+                System.out.println("\n🎮 Playground:");
+                System.out.println("1. Executar tarefa novamente");
+                System.out.println("0. Sair");
+                System.out.print("Escolha: ");
+
+                int escolha = lerInteiro();
+
+                switch (escolha) {
+                    case 1 -> {
+                        List<Opcao> opcoes = (tarefa instanceof TarefaClassificacaoBinaria)
+                                ? List.of(
+                                new Opcao("Usar dataset pequeno", false),
+                                new Opcao("Usar dataset grande", false),
+                                new Opcao("Testar com dado fictício", false)
+                        )
+                                : List.of(
+                                new Opcao("Gerar resposta curta", false),
+                                new Opcao("Gerar resposta detalhada", false),
+                                new Opcao("Gerar resposta criativa", false)
+                        );
+
+                        sessao.iniciar();
+                        sessao.interagirComOpcoes(opcoes);
+                    }
+                    case 0 -> {
+                        System.out.println("Saindo do Playground...");
+                        return;
+                    }
+                    default -> System.out.println("❌ Opção inválida.");
                 }
+
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println("Erro na sessão: " + e.getMessage());
         }
     }
-
     private static void menuAdmin(Admin admin) {
         try {
             carregador.carregarTodosDados();
