@@ -132,6 +132,11 @@ public class Main {
     }
 
     private static void menuAluno(Aluno aluno) {
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar todos os dados.");
+        }
         System.out.println("\n--- MENU ALUNO: " + aluno.nome + " ---");
         System.out.println("1. Listar Cursos Disponíveis");
         System.out.println("2. Ver Minhas Inscrições");
@@ -426,6 +431,11 @@ public class Main {
     }
 
     private static void menuAdmin(Admin admin) {
+        try {
+            carregador.carregarTodosDados();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar todos os dados.");
+        }
         System.out.println("\n--- MENU ADMIN: " + admin.nome + " ---");
         System.out.println("1. Listar Cursos");
         System.out.println("2. Publicar/Despublicar Curso");
