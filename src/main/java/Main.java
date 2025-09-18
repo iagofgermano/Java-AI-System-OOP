@@ -59,9 +59,9 @@ public class Main {
 
         if (alunoOpt.isPresent() && alunoOpt.get().autenticar(email, senha)) {
             usuarioLogado = alunoOpt.get();
-            System.out.println("✅ Login bem-sucedido como Aluno: " + usuarioLogado.nome);
+            System.out.println("Login bem-sucedido como Aluno: " + usuarioLogado.nome);
         } else {
-            System.out.println("❌ Email ou senha incorretos.");
+            System.out.println("Email ou senha incorretos.");
         }
     }
 
@@ -93,13 +93,6 @@ public class Main {
         String senha = scanner.nextLine();
 
         Aluno aluno = new Aluno(nome, email, senha);
-        try {
-            aluno.getClass().getDeclaredField("senhaHash").setAccessible(true);
-            aluno.getClass().getDeclaredField("senhaHash").set(aluno, senha);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         armazenamento.salvarAluno(aluno);
         System.out.println("✅ Aluno registrado com sucesso!");
     }
@@ -113,12 +106,6 @@ public class Main {
         String senha = scanner.nextLine();
 
         Admin admin = new Admin(nome, email, senha);
-        try {
-            admin.getClass().getDeclaredField("senhaHash").setAccessible(true);
-            admin.getClass().getDeclaredField("senhaHash").set(admin, senha);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         armazenamento.salvarAdmin(admin);
         System.out.println("✅ Admin registrado com sucesso!");
@@ -455,8 +442,7 @@ public class Main {
     private static void listarCursosAdmin() {
         List<Curso> cursos = armazenamento.listarCursos();
         if (cursos.isEmpty()) {
-            System.out.println("Nenhum curso cadastrado.");
-            return;
+            throw new RuntimeException("Nenhum curso cadastrado.");
         }
 
         for (int i = 0; i < cursos.size(); i++) {
@@ -491,7 +477,6 @@ public class Main {
 
         Curso curso = new Curso(titulo, descricao);
 
-        // Adicionar módulos e aulas de exemplo
         Modulo mod1 = new Modulo(1, "Introdução");
         Aula aula1 = new Aula(1, 10);
         aula1.adicionarBloco("Bem-vindo ao curso!");

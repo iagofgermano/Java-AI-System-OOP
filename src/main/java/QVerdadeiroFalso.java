@@ -13,4 +13,7 @@ public class QVerdadeiroFalso extends Questao {
         return (respostaBool == correto) ? peso : 0.0;
     }
 
+    public boolean isCorreto() {
+        return correto;
+    }
 }

@@ -30,4 +30,8 @@ public class QMultiplaSelecao extends Questao {
     public List<Opcao> getOpcoes() {
         return opcoes;
     }
+
+    public Set<Integer> getCorretas() {
+        return corretas;
+    }
 }
