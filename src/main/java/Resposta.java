@@ -13,10 +13,6 @@ public class Resposta {
         return valor;
     }
 
-    /**
-     * Converte o valor da resposta em um índice único (para questões de uma escolha).
-     * Assume que o valor é um número inteiro representando o índice da opção selecionada.
-     */
     public int indiceSelecionado() {
         try {
             return Integer.parseInt(valor);
@@ -25,10 +21,6 @@ public class Resposta {
         }
     }
 
-    /**
-     * Converte o valor da resposta em um conjunto de índices (para questões de múltipla seleção).
-     * Assume que o valor contém índices separados por vírgula (ex: "1,3,4").
-     */
     public Set<Integer> indicesSelecionados() {
         if (valor == null || valor.isEmpty()) {
             return Collections.emptySet();

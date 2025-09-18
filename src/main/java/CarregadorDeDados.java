@@ -67,16 +67,12 @@ public class CarregadorDeDados {
         }
     }
 
-    /**
-     * Carrega uma lista de cursos a partir de um arquivo .txt.
-     * Formato esperado: UUID;titulo;descricao
-     */
     public void carregarCursos(Path arquivo) throws IOException {
         List<String> linhas = Files.readAllLines(arquivo);
 
         for (String linha : linhas) {
             if (linha.startsWith("CURSO;")) {
-                String[] partes = linha.split(";", 5); // limita para evitar split no texto
+                String[] partes = linha.split(";", 5);
                 if (partes.length == 5) {
                     UUID id = UUID.fromString(partes[1]);
                     String titulo = partes[2];
@@ -96,7 +92,7 @@ public class CarregadorDeDados {
 
         for (String linha : linhas) {
             if (linha.startsWith("INSCRICAO;")) {
-                String[] partes = linha.split(";"); // limita para evitar split no texto
+                String[] partes = linha.split(";");
                 if (partes.length == 5) {
                     UUID id = UUID.fromString(partes[1]);
                     UUID alunoId = UUID.fromString(partes[2]);
@@ -181,7 +177,7 @@ public class CarregadorDeDados {
             if (partes.length < 4) continue;
 
             int ordem = Integer.parseInt(partes[1]);
-            UUID aulaId = UUID.fromString(partes[partes.length - 1]); // último campo é sempre aulaId
+            UUID aulaId = UUID.fromString(partes[partes.length - 1]);
             Aula aula = aulas.get(aulaId);
             if (aula == null) continue;
 
@@ -338,7 +334,6 @@ public class CarregadorDeDados {
         }
     }
 
-    // Getters para acesso aos dados carregados
     public Map<UUID, Curso> getCursos() { return cursos; }
     public Map<UUID, Modulo> getModulos() { return modulos; }
     public Map<UUID, Aula> getAulas() { return aulas; }

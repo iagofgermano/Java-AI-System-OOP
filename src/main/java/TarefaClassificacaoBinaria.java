@@ -2,7 +2,6 @@ public class TarefaClassificacaoBinaria extends TarefaBase implements TarefaIA{
 
     @Override
     public void validar(Parametros parametros) {
-        // Valida se os parâmetros necessários estão presentes
         if (!parametros.get("texto").isPresent()) {
             throw new IllegalArgumentException("Parâmetro 'texto' é obrigatório.");
         }
@@ -26,7 +25,6 @@ public class TarefaClassificacaoBinaria extends TarefaBase implements TarefaIA{
     }
 
     private boolean classificarTexto(String texto) {
-        // Simulação simples de classificação binária
         String textoLower = texto.toLowerCase();
         return textoLower.contains("ótimo") ||
                 textoLower.contains("bom") ||

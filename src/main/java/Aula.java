@@ -27,9 +27,6 @@ public class Aula {
         blocos.add(b);
     }
 
-    public void adicionarBloco(String texto) {
-        blocos.add(new BlocoTexto(1, texto));
-    }
 
     public void definirQuiz(Quiz q) {
         this.quiz = q;
@@ -39,7 +36,6 @@ public class Aula {
         return a.concluiuAula(this);
     }
 
-    // Getters
     public UUID getId() { return id; }
     public int getOrdem() { return ordem; }
     public int getDuracaoMin() { return duracaoMin; }

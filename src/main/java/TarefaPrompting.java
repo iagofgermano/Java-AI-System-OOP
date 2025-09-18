@@ -6,7 +6,6 @@ public class TarefaPrompting extends TarefaBase implements TarefaIA {
 
     @Override
     public void validar(Parametros parametros) {
-        // Valida se os parâmetros necessários para prompting estão presentes
         if (!parametros.get("prompt").isPresent()) {
             throw new IllegalArgumentException("Parâmetro 'prompt' é obrigatório.");
         }
@@ -17,7 +16,6 @@ public class TarefaPrompting extends TarefaBase implements TarefaIA {
         validar(parametros);
 
         String prompt = parametros.get("prompt").orElse("");
-        // Simulação de execução de prompting
         String respostaSimulada = "[Resposta simulada para o prompt: " + prompt + "]";
 
         Resultado resultado = new Resultado("Execução de prompting concluída com sucesso.");

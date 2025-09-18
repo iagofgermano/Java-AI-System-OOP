@@ -1,4 +1,3 @@
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Inscricao {
@@ -12,35 +11,25 @@ public class Inscricao {
         this.id = UUID.randomUUID();
         this.aluno = aluno;
         this.curso = curso;
-        this.status = StatusInscricao.ACTIVE; // Status inicial padrão
+        this.status = StatusInscricao.ACTIVE;
     }
 
     public Inscricao(UUID id, Aluno aluno, Curso curso, StatusInscricao status) {
         this.id = id;
         this.aluno = aluno;
         this.curso = curso;
-        this.status = status; // Status inicial padrão
+        this.status = status;
     }
 
-    // Métodos
-
-    /**
-     * Marca a inscrição como concluída.
-     */
     public void marcarConcluida() {
         if (this.status == StatusInscricao.ACTIVE) {
             this.status = StatusInscricao.COMPLETED;
         }
     }
 
-    /**
-     * Arquiva a inscrição.
-     */
     public void arquivar() {
         this.status = StatusInscricao.ARCHIVED;
     }
-
-    // Getters e Setters
 
     public UUID getId() {
         return id;

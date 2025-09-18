@@ -34,7 +34,6 @@ public class Main {
         }
     }
 
-    // ==================== LOGIN ====================
     private static void menuLogin() {
         System.out.println("\n--- LOGIN ---");
         System.out.println("1. Entrar como Aluno");
@@ -132,7 +131,6 @@ public class Main {
         System.out.println("✅ Admin registrado com sucesso!");
     }
 
-    // ==================== MENU ALUNO ====================
     private static void menuAluno(Aluno aluno) {
         System.out.println("\n--- MENU ALUNO: " + aluno.nome + " ---");
         System.out.println("1. Listar Cursos Disponíveis");
@@ -243,8 +241,6 @@ public class Main {
         int aulaNum = lerInteiro();
         if (aulaNum == 0) return;
 
-        // Encontrar aula por ordem global? Ou por módulo?
-        // Simplificação: percorre todos os módulos
         Aula aulaSelecionada = null;
         for (Modulo mod : curso.getModulos()) {
             for (Aula aula : mod.getAulas()) {
@@ -269,11 +265,9 @@ public class Main {
         System.out.println("📄 AULA " + aula.getOrdem());
         System.out.println("=".repeat(50));
 
-        // Marcar como em progresso
         Progresso prog = aluno.obterProgresso(aula);
         if (prog == null) {
             prog = new Progresso(aluno, aula);
-            // Simular adição ao mapa (em produção, use método)
             try {
                 java.lang.reflect.Field field = Aluno.class.getDeclaredField("progressoPorAula");
                 field.setAccessible(true);
@@ -286,14 +280,12 @@ public class Main {
         }
         prog.marcarEmProgresso();
 
-        // Mostrar blocos
         for (BlocoConteudo bloco : aula.getBlocos()) {
             System.out.println(bloco.render());
             System.out.println();
             pressioneEnter();
         }
 
-        // Se tiver quiz
         if (aula.getQuiz() != null) {
             System.out.println("📝 Quiz disponível!");
             System.out.print("Deseja responder agora? (s/n): ");
@@ -421,7 +413,7 @@ public class Main {
                 if (input.equalsIgnoreCase("executar")) {
                     Resultado resultado = sessao.executar(params);
                     System.out.println("\n✅ Resultado:\n" + resultado.toString());
-                    params = new Parametros(); // reset
+                    params = new Parametros();
                 } else if (input.contains("=")) {
                     String[] partes = input.split("=", 2);
                     params.put(partes[0].trim(), partes[1].trim());
@@ -433,7 +425,6 @@ public class Main {
         }
     }
 
-    // ==================== MENU ADMIN ====================
     private static void menuAdmin(Admin admin) {
         System.out.println("\n--- MENU ADMIN: " + admin.nome + " ---");
         System.out.println("1. Listar Cursos");
@@ -517,7 +508,6 @@ public class Main {
 
         Curso curso = new Curso(titulo, descricao);
 
-        // Adicionar módulos
         int numModulo = 1;
         while (true) {
             System.out.println("\n--- Criando Módulo " + numModulo + " ---");
@@ -527,7 +517,6 @@ public class Main {
 
             Modulo modulo = new Modulo(numModulo, tituloModulo);
 
-            // Adicionar aulas
             int numAula = 1;
             while (true) {
                 System.out.println("\n--- Criando Aula " + numAula + " no Módulo " + numModulo + " ---");
@@ -540,7 +529,6 @@ public class Main {
 
                 Aula aula = new Aula(numAula, duracao);
 
-                // Adicionar blocos de conteúdo
                 int ordemBloco = 1;
                 while (true) {
                     System.out.println("\nAdicionar bloco à Aula " + numAula + ":");
@@ -585,7 +573,6 @@ public class Main {
                     }
                 }
 
-                // Adicionar quiz?
                 System.out.print("\nDeseja adicionar um quiz a esta aula? (s/n): ");
                 if (scanner.nextLine().equalsIgnoreCase("s")) {
                     Quiz quiz = criarQuizInterativo();
@@ -702,7 +689,6 @@ public class Main {
         return new QVerdadeiroFalso(enunciado, peso, correta);
     }
 
-    // ==================== UTILS ====================
     private static int lerInteiro() {
         try {
             return Integer.parseInt(scanner.nextLine());

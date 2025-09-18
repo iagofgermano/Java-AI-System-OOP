@@ -5,8 +5,6 @@ import java.nio.file.*;
 import java.util.stream.Collectors;
 
 public class ArmazenamentoEmMemoria {
-
-    // Usando ConcurrentHashMap para thread-safety
     private final Map<UUID, Curso> cursos;
     private final Map<UUID, Aluno> alunos;
     private final Map<UUID, Quiz> quizzes;
@@ -14,13 +12,10 @@ public class ArmazenamentoEmMemoria {
     private final Map<UUID, Aula> aulas;
     private final Map<UUID, Admin> admins;
     private final Map<UUID, Inscricao> inscricoes;
-    private final Map<UUID, Insignia> insignias;           // Catálogo de insígnias
-    private final Map<UUID, InsigniaDoUsuario> insigniasConcedidas; // Concessões a alunos
+    private final Map<UUID, Insignia> insignias;
+    private final Map<UUID, InsigniaDoUsuario> insigniasConcedidas;
     private final CarregadorDeDados carregador;
 
-
-
-    // Diretórios para persistência
     private final Path diretorioDados;
 
     public ArmazenamentoEmMemoria() {
@@ -31,8 +26,8 @@ public class ArmazenamentoEmMemoria {
         this.aulas = new ConcurrentHashMap<>();
         this.admins = new ConcurrentHashMap<>();
         this.inscricoes = new ConcurrentHashMap<>();
-        this.insignias = new ConcurrentHashMap<>();           // <-- novo
-        this.insigniasConcedidas = new ConcurrentHashMap<>(); // <-- novo
+        this.insignias = new ConcurrentHashMap<>();
+        this.insigniasConcedidas = new ConcurrentHashMap<>();
         this.carregador = new CarregadorDeDados();
         try {
             carregador.carregarTodosDados();
@@ -51,10 +46,6 @@ public class ArmazenamentoEmMemoria {
         }
     }
 
-    // =========================
-    // MÉTODOS PARA CURSOS
-    // =========================
-
     public Curso obterCurso(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do curso não pode ser null");
@@ -67,15 +58,11 @@ public class ArmazenamentoEmMemoria {
             throw new IllegalArgumentException("Curso não pode ser null");
         }
         cursos.put(curso.getId(), curso);
-
-        // Salvar também os quizzes associados às aulas do curso
         for (Aula aula : curso.listarAulas()) {
             if (aula.getQuiz() != null) {
                 quizzes.put(aula.getQuiz().getId(), aula.getQuiz());
             }
         }
-
-        // Persistir no arquivo
         persistirCursos();
     }
 
@@ -109,10 +96,6 @@ public class ArmazenamentoEmMemoria {
                 .collect(ArrayList::new, (list, curso) -> list.add(curso), ArrayList::addAll);
     }
 
-    // =========================
-    // MÉTODOS PARA ALUNOS
-    // =========================
-
     public Aluno obterAluno(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do aluno não pode ser null");
@@ -125,8 +108,6 @@ public class ArmazenamentoEmMemoria {
             throw new IllegalArgumentException("Aluno não pode ser null");
         }
         alunos.put(aluno.getId(), aluno);
-
-        // Persistir no arquivo
         persistirAlunos();
     }
 
@@ -135,7 +116,6 @@ public class ArmazenamentoEmMemoria {
             throw new IllegalArgumentException("Admin não pode ser null");
         }
         admins.put(admin.getId(), admin);
-
         persistirAdmins();
     }
 
@@ -183,10 +163,6 @@ public class ArmazenamentoEmMemoria {
         return insigniasConcedidas;
     }
 
-    // =========================
-    // MÉTODOS PARA PERSISTÊNCIA EM ARQUIVOS
-    // =========================
-
     public void persistirCursos() {
         try {
             Path arquivoCursos = diretorioDados.resolve("cursos.txt");
@@ -205,30 +181,26 @@ public class ArmazenamentoEmMemoria {
             ) {
 
                 for (Curso curso : cursos.values()) {
-                    // Escrever cabeçalho do curso
                     writerCursos.append(String.format("CURSO;%s;%s;%s;%s%n",
                             curso.getId().toString(),
                             curso.getTitulo(),
                             curso.getDescricao(),
                             curso.isPublicado()));
 
-                    // Escrever módulos
                     for (Modulo modulo : curso.getModulos()) {
-                        writerModulos.append(String.format("MODULO;%s;%s;%d;%s%n",  // adicionado cursoId
+                        writerModulos.append(String.format("MODULO;%s;%s;%d;%s%n",
                                 modulo.getId().toString(),
-                                curso.getId().toString(),  // <-- ID do curso
+                                curso.getId().toString(),
                                 modulo.getOrdem(),
                                 modulo.getTitulo()));
 
-                        // Escrever aulas
                         for (Aula aula : modulo.getAulas()) {
-                            writerAulas.append(String.format("AULA;%s;%s;%d;%d%n",  // adicionado moduloId
+                            writerAulas.append(String.format("AULA;%s;%s;%d;%d%n",
                                     aula.getId().toString(),
-                                    modulo.getId().toString(),  // <-- ID do módulo
+                                    modulo.getId().toString(),
                                     aula.getOrdem(),
                                     aula.getDuracaoMin()));
 
-                            // Escrever blocos de conteúdo
                             for (BlocoConteudo bloco : aula.getBlocos()) {
                                 if (bloco instanceof BlocoTexto) {
                                     BlocoTexto bt = (BlocoTexto) bloco;
@@ -245,24 +217,21 @@ public class ArmazenamentoEmMemoria {
                                 }
                             }
 
-                            // Escrever quiz se existir
                             if (aula.getQuiz() != null) {
                                 Quiz quiz = aula.getQuiz();
-                                writerQuizzes.append(String.format("QUIZ;%s;%s;%d%n",  // adicionado aulaId
+                                writerQuizzes.append(String.format("QUIZ;%s;%s;%d%n",
                                         quiz.getId().toString(),
-                                        aula.getId().toString(),  // <-- ID da aula
+                                        aula.getId().toString(),
                                         quiz.getNotaMinima()));
 
-                                // Escrever questões
                                 for (Questao questao : quiz.getQuestoes()) {
                                     if (questao instanceof QUmaEscolha) {
                                         QUmaEscolha q = (QUmaEscolha) questao;
-                                        // Serializar opções como pipe-separated
                                         String opcoesStr = q.getOpcoes().stream()
-                                                .map(op -> op.getTexto().replace("|", "\\|")) // escapar pipe
+                                                .map(op -> op.getTexto().replace("|", "\\|"))
                                                 .collect(Collectors.joining("|"));
                                         writerQuestoes.append(String.format("QUESTAO_UMA_ESCOLHA;%s;%s;%f;%d;%s%n",
-                                                quiz.getId().toString(),  // <-- quizId
+                                                quiz.getId().toString(),
                                                 q.getEnunciado().replace(";", "\\;"),
                                                 q.getPeso(),
                                                 q.getIndiceCorreto(),

@@ -6,7 +6,6 @@ public class SessaoPlayground implements AutoCloseable {
     private Resultado ultimoResultado;
     private boolean ativa;
 
-    // Construtor
     public SessaoPlayground(Aluno aluno, TarefaIA tarefa) {
         this.aluno = aluno;
         this.tarefa = tarefa;
@@ -14,7 +13,6 @@ public class SessaoPlayground implements AutoCloseable {
         this.ativa = false;
     }
 
-    // Método para iniciar a sessão
     public void iniciar() {
         if (!ativa) {
             this.ativa = true;
@@ -24,7 +22,6 @@ public class SessaoPlayground implements AutoCloseable {
         }
     }
 
-    // Método para executar a tarefa com os parâmetros fornecidos
     public Resultado executar(Parametros parametros) {
         if (!ativa) {
             throw new IllegalStateException("A sessão não foi iniciada.");
@@ -35,7 +32,6 @@ public class SessaoPlayground implements AutoCloseable {
         return this.ultimoResultado;
     }
 
-    // Método da interface AutoCloseable para fechar a sessão
     @Override
     public void close() {
         if (ativa) {
@@ -44,7 +40,6 @@ public class SessaoPlayground implements AutoCloseable {
         }
     }
 
-    // Getters (opcionais, dependendo da necessidade)
     public Aluno getAluno() {
         return aluno;
     }

@@ -5,23 +5,19 @@ import java.util.Optional;
 public class Parametros {
     private Map<String, String> valores;
 
-    // Construtor
     public Parametros() {
         this.valores = new HashMap<>();
     }
 
-    // Método para adicionar um par chave-valor
     public Parametros put(String chave, String valor) {
         this.valores.put(chave, valor);
-        return this; // Permite encadeamento
+        return this;
     }
 
-    // Método para obter um valor opcional com base na chave
     public Optional<String> get(String chave) {
         return Optional.ofNullable(this.valores.get(chave));
     }
 
-    // Método para obter um valor como inteiro
     public int getInt(String chave) {
         String valor = this.valores.get(chave);
         if (valor == null || valor.isEmpty()) {

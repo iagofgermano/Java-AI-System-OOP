@@ -33,7 +33,6 @@ public class Modulo {
         return null;
     }
 
-    // Getters
     public UUID getId() { return id; }
     public int getOrdem() { return ordem; }
     public String getTitulo() { return titulo; }

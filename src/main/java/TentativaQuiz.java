@@ -12,7 +12,6 @@ public class TentativaQuiz {
     private final LocalDateTime fim;
     private final int numeroTentativa;
 
-    // Construtor
     public TentativaQuiz(Aluno aluno, Quiz quiz, double nota, boolean aprovado,
                          LocalDateTime inicio, LocalDateTime fim, int numeroTentativa) {
         this.id = UUID.randomUUID();
@@ -29,7 +28,6 @@ public class TentativaQuiz {
         return aprovado;
     }
 
-    // Getters e Setters
     public UUID getId() {
         return id;
     }

@@ -1,20 +1,14 @@
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Classe abstrata Usuario (modelada conforme UML)
- */
 public abstract class Usuario {
 
     protected final UUID id;
     protected String nome;
     protected String email;
-    protected String senhaHash;    // privado conforme UML
-    protected boolean autenticado; // flag de autenticação
+    protected String senhaHash;
+    protected boolean autenticado;
 
-    /**
-     * Construtor protegido conforme diagrama (#Usuario(...))
-     */
     protected Usuario(String nome, String email, String senha) {
         this.id = UUID.randomUUID();
         this.nome = Objects.requireNonNull(nome, "Nome não pode ser nulo");
@@ -61,8 +55,6 @@ public abstract class Usuario {
     public UUID getId() {
         return id;
     }
-
-    /* ---------- Helpers protegidos (não expostos no UML) ---------- */
 
     protected void setSenha(String senha) {
         this.senhaHash = hashSenha(senha);

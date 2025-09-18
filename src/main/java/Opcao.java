@@ -8,7 +8,6 @@ public class Opcao {
         this.correta = correta;
     }
 
-    // Getters
     public String getTexto() {
         return texto;
     }
@@ -17,7 +16,6 @@ public class Opcao {
         return correta;
     }
 
-    // Setters (opcionais - só se você quiser alterar depois de criar)
     public void setTexto(String texto) {
         this.texto = texto;
     }

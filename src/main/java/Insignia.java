@@ -12,7 +12,6 @@ public class Insignia {
         this.descricao = descricao;
     }
 
-    // Getters
     public UUID getId() {
         return id;
     }
@@ -21,24 +20,16 @@ public class Insignia {
         return nome;
     }
 
-    /**
-     * Concede a insígnia ao aluno se ele atender aos critérios.
-     * @param aluno O aluno que pode receber a insígnia
-     * @param curso O curso relacionado à concessão
-     * @return true se a insígnia foi concedida, false caso contrário
-     */
     public boolean conceder(Aluno aluno, Curso curso) {
-        // Verifica se o aluno concluiu todas as aulas do curso
         for (Aula aula : curso.listarAulas()) {
             if (!aula.concluidaPor(aluno)) {
-                return false; // Se alguma aula não foi concluída, não concede a insígnia
+                return false;
             }
         }
 
-        // Se todas as aulas foram concluídas, concede a insígnia
         LocalDateTime data = LocalDateTime.now();
         InsigniaDoUsuario insigniaDoUsuario = new InsigniaDoUsuario(aluno, this, data);
-        aluno.adicionarInsignia(insigniaDoUsuario); // assumindo que Aluno tem esse método
+        aluno.adicionarInsignia(insigniaDoUsuario);
         return true;
     }
 

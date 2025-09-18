@@ -7,7 +7,6 @@ public class InsigniaDoUsuario {
     private Insignia insignia;
     private LocalDateTime data;
 
-    // Construtor
     public InsigniaDoUsuario(Aluno aluno, Insignia insignia, LocalDateTime data) {
         this.id = UUID.randomUUID();
         this.aluno = aluno;
@@ -22,7 +21,6 @@ public class InsigniaDoUsuario {
         this.data = data;
     }
 
-    // Getters
     public UUID getId() {
         return id;
     }

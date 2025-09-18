@@ -59,7 +59,6 @@ public class Quiz {
 
     public int getTentativasRestantes(Aluno aluno) {
         List<TentativaQuiz> tentativas = tentativasPorAluno.getOrDefault(aluno, new ArrayList<>());
-        // exemplo: limite fixo de 3 tentativas
         return Math.max(0, 3 - tentativas.size());
     }
 
