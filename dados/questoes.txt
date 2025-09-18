@@ -1,1 +1,0 @@
-QUESTAO_VERDADEIRO_FALSO;fe8c4d43-72f8-42ec-a046-90b55b2fd63b;Vamos ensinar IA nesse curso?;100,000000;true

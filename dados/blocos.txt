@@ -1,2 +1,0 @@
-BLOCO_TEXTO;1;Bem vindo ao curso;0f4eb32a-2be5-4b56-aa33-99fa36c224fc
-BLOCO_TEXTO;2;Vamos ensinar IA;0f4eb32a-2be5-4b56-aa33-99fa36c224fc
