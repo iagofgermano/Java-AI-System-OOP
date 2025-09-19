@@ -250,7 +250,7 @@ public class CarregadorDeDados {
                 if (partes.length == 6) {
                     UUID quizId = UUID.fromString(partes[1]);
                     String enunciado = partes[2].replace("\\;", ";");
-                    double peso = Double.parseDouble(partes[3]);
+                    double peso = Double.parseDouble(partes[3].replace(",", "."));
                     int indiceCorreto = Integer.parseInt(partes[4]);
                     String[] opcoesStr = partes[5].split("\\|");
 
@@ -270,7 +270,7 @@ public class CarregadorDeDados {
                 if (partes.length == 6) {
                     UUID quizId = UUID.fromString(partes[1]);
                     String enunciado = partes[2].replace("\\;", ";");
-                    double peso = Double.parseDouble(partes[3]);
+                    double peso = Double.parseDouble(partes[3].replace(",","."));
                     String[] opcoesStr = partes[4].split("\\|");
                     String[] indicesCorretosStr = partes[5].split(",");
 

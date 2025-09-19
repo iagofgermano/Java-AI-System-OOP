@@ -1,0 +1,2 @@
+BLOCO_TEXTO;1;Bem vindo ao curso de teste! Hoje, vamos aprender sobre os objetivos do curso.;4aecdfa6-70d2-41f0-83f0-a7e7f2a39ac5
+BLOCO_TEXTO;2;Os objetivos do curso são auxiliar os alunos a aprender IA, e ajudar a comunidade de software.;4aecdfa6-70d2-41f0-83f0-a7e7f2a39ac5

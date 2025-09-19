@@ -1,0 +1,1 @@
+QUESTAO_MULTIPLA_SELECAO;3d888304-ea28-48bf-be42-edf6f664e9cb;Quais os objetivos do curso?;10,000000;Aprender IA|Ajudar a comunidade?|Conscientizar sobre bioogia;0,1

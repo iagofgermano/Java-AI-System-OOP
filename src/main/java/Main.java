@@ -24,6 +24,11 @@ public class Main {
         }
         System.out.println("🎓 Bem-vindo ao Sistema de ensino de IA CLI 🎓");
         while (true) {
+            try {
+                carregador.carregarTodosDados();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (usuarioLogado == null) {
                 menuLogin();
             } else if (usuarioLogado instanceof Aluno) {

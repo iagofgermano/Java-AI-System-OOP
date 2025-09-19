@@ -1,0 +1,2 @@
+ALUNO;f4eefe81-93a3-4c25-b163-30bab357f65c;Iago;iago@gmail.com;48690
+ALUNO;46f0eb94-02d2-4e81-baad-31672d7d205f;Eudes;eudes@gmail.com;48690

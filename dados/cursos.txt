@@ -1,0 +1,1 @@
+CURSO;bcd3f183-0774-4fe2-8295-d0ca6cf50a5f;Curso 1;curso de teste;true
