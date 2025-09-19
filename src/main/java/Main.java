@@ -300,25 +300,9 @@ public class Main {
         }
 
         prog.marcarConcluido();
-
         System.out.println("✅ Aula concluída!");
-
-        Curso cursoPai = encontrarCursoPorAula(aula);
-        if (cursoPai != null) {
-            gestor.verificarConclusaoCurso(aluno, cursoPai);
-        }
     }
 
-    private static Curso encontrarCursoPorAula(Aula aula) {
-        for (Curso curso : armazenamento.getCursos().values()) {
-            for (Modulo mod : curso.getModulos()) {
-                if (mod.getAulas().contains(aula)) {
-                    return curso;
-                }
-            }
-        }
-        return null;
-    }
     private static void realizarQuiz(Aluno aluno, Quiz quiz) {
         RespostaSheet respostas = new RespostaSheet();
         System.out.println("\n" + "-".repeat(40));
@@ -636,26 +620,6 @@ public class Main {
 
             System.out.print("Deseja adicionar outro módulo? (s/n): ");
             if (!scanner.nextLine().equalsIgnoreCase("s")) break;
-        }
-
-        System.out.println("Deseja assinalar uma insígnia a esse curso? (s/n): ");
-        if (scanner.nextLine().equalsIgnoreCase("s")) {
-            List<Insignia> insignias = carregador.getInsignias().values().stream().collect(Collectors.toList());
-            if(!insignias.isEmpty()){
-                while(true){
-                    for(int idx = 0; idx < insignias.size(); idx++){
-                        System.out.printf("%d. Insígnia: %s - %s\n", idx + 1, insignias.get(idx).getNome(), insignias.get(idx).getDescricao());
-                    }
-                    System.out.print("Escolha uma insígnia: ");
-                    int id = scanner.nextInt();
-                    curso.addInsignia(insignias.get(id - 1));
-                    System.out.println("Deseja adicionar outra insignia? (s/n): ");
-                    if (!scanner.nextLine().equalsIgnoreCase("s")) break;
-                }
-            } else {
-                System.out.println("Nenhum insignia encontrada.");
-            }
-
         }
 
         armazenamento.salvarCurso(curso);

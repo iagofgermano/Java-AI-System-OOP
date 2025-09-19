@@ -20,17 +20,37 @@ public class CarregadorDeDados {
     }
 
     public void carregarTodosDados() throws IOException {
-        carregarInsignias(Paths.get(diretorioBase, "insignias.txt"));
-        carregarInsigniasConcedidas(Paths.get(diretorioBase, "insignias_concedidas.txt"));
-        carregarAlunos(Paths.get(diretorioBase, "alunos.txt"));
-        carregarAdmins(Paths.get(diretorioBase, "admins.txt"));
-        carregarCursos(Paths.get(diretorioBase, "cursos.txt"));
-        carregarModulos(Paths.get(diretorioBase, "modulos.txt"));
-        carregarAulas(Paths.get(diretorioBase, "aulas.txt"));
-        carregarBlocosTexto(Paths.get(diretorioBase, "blocos.txt"));
-        carregarQuizzes(Paths.get(diretorioBase, "quizzes.txt"));
-        carregarQuestoes(Paths.get(diretorioBase, "questoes.txt"));
-        carregarInscricoes(Paths.get(diretorioBase, "inscricoes.txt"));
+        try {
+            Files.createDirectories(Paths.get(diretorioBase));
+        } catch (FileAlreadyExistsException e) {
+            System.out.println("Pasta já existe");
+        } catch (IOException e){
+            System.out.println("Erro ao criar o diretório");
+        }
+
+        Path pathInsignias = Paths.get(diretorioBase, "insignias.txt");
+        Path pathAlunos = Paths.get(diretorioBase, "alunos.txt");
+        Path pathInsigniasConcedidas =  Paths.get(diretorioBase, "insignias_concedidas.txt");
+        Path pathAdmins = Paths.get(diretorioBase, "admins.txt");
+        Path pathCursos = Paths.get(diretorioBase, "cursos.txt");
+        Path pathModulos = Paths.get(diretorioBase, "modulos.txt");
+        Path pathAulas = Paths.get(diretorioBase, "aulas.txt");
+        Path pathBlocosTexto = Paths.get(diretorioBase, "blocos.txt");
+        Path pathQuizzes = Paths.get(diretorioBase, "quizzes.txt");
+        Path pathQuestoes =  Paths.get(diretorioBase, "questoes.txt");
+        Path pathInscricoes = Paths.get(diretorioBase, "inscricoes.txt");
+
+        carregarInsignias((!Files.exists(pathInsignias)) ? Files.createFile(pathInsignias) : pathInsignias);
+        carregarInsigniasConcedidas((!Files.exists(pathInsigniasConcedidas)) ? Files.createFile(pathInsigniasConcedidas) : pathInsigniasConcedidas);
+        carregarAlunos((!Files.exists(pathAlunos)) ? Files.createFile(pathAlunos) : pathAlunos);
+        carregarAdmins((!Files.exists(pathAdmins)) ? Files.createFile(pathAdmins) : pathAdmins);
+        carregarCursos((!Files.exists(pathCursos)) ? Files.createFile(pathCursos) : pathCursos);
+        carregarModulos((!Files.exists(pathModulos)) ? Files.createFile(pathModulos) : pathModulos);
+        carregarAulas((!Files.exists(pathAulas)) ? Files.createFile(pathAulas) : pathAulas);
+        carregarBlocosTexto((!Files.exists(pathBlocosTexto)) ? Files.createFile(pathBlocosTexto) : pathBlocosTexto);
+        carregarQuizzes((!Files.exists(pathQuizzes)) ? Files.createFile(pathQuizzes) : pathQuizzes);
+        carregarQuestoes((!Files.exists(pathQuestoes)) ? Files.createFile(pathQuestoes) : pathQuestoes);
+        carregarInscricoes((!Files.exists(pathInscricoes))  ? Files.createFile(pathInscricoes) : pathInscricoes);
     }
 
     public void carregarAlunos(Path arquivo) throws IOException {
